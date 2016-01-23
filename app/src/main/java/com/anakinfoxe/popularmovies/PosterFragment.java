@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
 import com.anakinfoxe.popularmovies.async.AsyncResponse;
 import com.anakinfoxe.popularmovies.async.MovieListTask;
+import com.anakinfoxe.popularmovies.listener.InfiniteScrollListener;
 import com.anakinfoxe.popularmovies.model.Movie;
 
 import java.util.List;
@@ -26,9 +27,6 @@ public class PosterFragment extends Fragment {
     private GridLayoutManager mLayoutManager;
 
     private PosterAdapter mPosterAdapter;
-
-    private boolean isLoading = true;
-    private int loadedPage = 1;
 
     public PosterFragment() {
 
@@ -55,29 +53,13 @@ public class PosterFragment extends Fragment {
         // instantiate poster adapter
         mPosterAdapter = new PosterAdapter(getActivity());
 
-        // update the content of posters
-        updatePosters(loadedPage);
-
         // set recycler view adapter
         rv.setAdapter(mPosterAdapter);
 
-        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 1) {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
-                int visibleItemCount = mLayoutManager.getChildCount();
-                int totalItemCount = mLayoutManager.getItemCount();
-
-                Log.v(LOG_TAG, firstVisibleItemPosition + ", " + visibleItemCount + ", " + totalItemCount + ". dy = " + dy);
-
-                if (dy > 0) {
-
-                    if (isLoading
-                        && (firstVisibleItemPosition + visibleItemCount) >= totalItemCount) {
-//                        isLoading = false;
-                        updatePosters(++loadedPage);
-                    }
-                }
+            public void onLoadMore(int page, int totalItemCount) {
+                updatePosters(page);
             }
         });
 
@@ -90,7 +72,7 @@ public class PosterFragment extends Fragment {
         super.onStart();
 
         // update posters when program starts
-        updatePosters(loadedPage);
+        updatePosters(1);
     }
 
     private void updatePosters(int pageNum) {
