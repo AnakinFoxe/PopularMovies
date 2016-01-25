@@ -149,7 +149,8 @@ public class TheMovieDBApi {
 
                 // the only crucial parts are
                 // 1) poster url
-                movieObj.setPosterPath(POSTER_BASE_URL + movie.getString("poster_path"));
+                movieObj.setPosterPath(Uri.parse(POSTER_BASE_URL
+                                        + movie.getString("poster_path")));
                 // 2) movie id
                 movieObj.setId(movie.getLong("id"));
                 // still grab everything we got from the response
@@ -157,7 +158,8 @@ public class TheMovieDBApi {
                 movieObj.setOverview(movie.getString("overview"));
                 movieObj.setOriginalTitle(movie.getString("original_title"));
                 movieObj.setTitle(movie.getString("title"));
-                movieObj.setBackdropPath(BACKDROP_BASE_URL + movie.getString("backdrop_path"));
+                movieObj.setBackdropPath(Uri.parse(BACKDROP_BASE_URL
+                                        + movie.getString("backdrop_path")));
                 movieObj.setPopularity(movie.getDouble("popularity"));
                 movieObj.setReleaseDate(formatter.parse(movie.getString("release_date")));
                 movieObj.setVoteCount(movie.getLong("vote_count"));
@@ -184,13 +186,15 @@ public class TheMovieDBApi {
             Movie movieObj = new Movie();
 
             movieObj.setAdult(movie.getBoolean("adult"));
-            movieObj.setBackdropPath(BACKDROP_BASE_URL + movie.getString("backdrop_path"));
+            movieObj.setBackdropPath(Uri.parse(BACKDROP_BASE_URL
+                                    + movie.getString("backdrop_path")));
             movieObj.setHomepage(movie.getString("homepage"));
             movieObj.setId(movie.getLong("id"));
             movieObj.setOriginalTitle(movie.getString("original_title"));
             movieObj.setOverview(movie.getString("overview"));
             movieObj.setPopularity(movie.getDouble("popularity"));
-            movieObj.setPosterPath(POSTER_BASE_URL + movie.getString("poster_path"));
+            movieObj.setPosterPath(Uri.parse(POSTER_BASE_URL
+                                    + movie.getString("poster_path")));
             movieObj.setReleaseDate(formatter.parse(movie.getString("release_date")));
             movieObj.setRuntime(movie.getInt("runtime"));
             movieObj.setTitle(movie.getString("title"));

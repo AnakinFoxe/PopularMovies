@@ -1,5 +1,6 @@
 package com.anakinfoxe.popularmovies.model;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -13,7 +14,7 @@ public class Movie implements Parcelable {
     private boolean adult;
 
     // TODO: change from only one backdrop to multiple backdrops
-    private String backdropPath;
+    private Uri backdropPath;
 
     private String homepage;
 
@@ -25,7 +26,7 @@ public class Movie implements Parcelable {
 
     private double popularity;
 
-    private String posterPath;
+    private Uri posterPath;
 
     private Date releaseDate;
 
@@ -48,11 +49,11 @@ public class Movie implements Parcelable {
         this.adult = adult;
     }
 
-    public String getBackdropPath() {
+    public Uri getBackdropPath() {
         return backdropPath;
     }
 
-    public void setBackdropPath(String backdropPath) {
+    public void setBackdropPath(Uri backdropPath) {
         this.backdropPath = backdropPath;
     }
 
@@ -96,11 +97,11 @@ public class Movie implements Parcelable {
         this.popularity = popularity;
     }
 
-    public String getPosterPath() {
+    public Uri getPosterPath() {
         return posterPath;
     }
 
-    public void setPosterPath(String posterPath) {
+    public void setPosterPath(Uri posterPath) {
         this.posterPath = posterPath;
     }
 
@@ -150,13 +151,13 @@ public class Movie implements Parcelable {
 
     protected Movie(Parcel in) {
         adult = in.readByte() != 0x00;
-        backdropPath = in.readString();
+        backdropPath = Uri.parse(in.readString());
         homepage = in.readString();
         id = in.readLong();
         originalTitle = in.readString();
         overview = in.readString();
         popularity = in.readDouble();
-        posterPath = in.readString();
+        posterPath = Uri.parse(in.readString());
         long tmpReleaseDate = in.readLong();
         releaseDate = tmpReleaseDate != -1L ? new Date(tmpReleaseDate) : null;
         runtime = in.readInt();
@@ -174,13 +175,13 @@ public class Movie implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (adult ? 0x01 : 0x00));
-        dest.writeString(backdropPath);
+        dest.writeString(backdropPath.toString());
         dest.writeString(homepage);
         dest.writeLong(id);
         dest.writeString(originalTitle);
         dest.writeString(overview);
         dest.writeDouble(popularity);
-        dest.writeString(posterPath);
+        dest.writeString(posterPath.toString());
         dest.writeLong(releaseDate != null ? releaseDate.getTime() : -1L);
         dest.writeInt(runtime);
         dest.writeString(title);

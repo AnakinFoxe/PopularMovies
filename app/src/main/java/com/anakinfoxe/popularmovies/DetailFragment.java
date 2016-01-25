@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.anakinfoxe.popularmovies.async.AsyncResponse;
 import com.anakinfoxe.popularmovies.async.MovieDetailTask;
 import com.anakinfoxe.popularmovies.model.Movie;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.squareup.picasso.Picasso;
 
 import java.math.RoundingMode;
@@ -30,8 +32,8 @@ public class DetailFragment extends Fragment {
 
     private Movie movie = null;
 
-    private ImageView imageViewBackdrop = null;
-    private ImageView imageViewPoster = null;
+    private SimpleDraweeView draweeBackdrop = null;
+    private SimpleDraweeView draweePoster = null;
     private TextView textViewTitle = null;
     private TextView textViewOverview = null;
     private TextView textViewReleasedDate = null;
@@ -59,8 +61,8 @@ public class DetailFragment extends Fragment {
             if (movie == null)
                 movie = intent.getExtras().getParcelable(MOVIE_OBJECT);
 
-            imageViewBackdrop = (ImageView) rootView.findViewById(R.id.imageview_backdrop);
-            imageViewPoster = (ImageView) rootView.findViewById(R.id.imageview_poster);
+            draweeBackdrop = (SimpleDraweeView) rootView.findViewById(R.id.drawee_backdrop);
+            draweePoster = (SimpleDraweeView) rootView.findViewById(R.id.drawee_poster);
             textViewTitle = (TextView) rootView.findViewById(R.id.textview_title);
             textViewOverview = (TextView) rootView.findViewById(R.id.textview_overview);
             textViewReleasedDate = (TextView) rootView.findViewById(R.id.textview_released_date);
@@ -82,15 +84,11 @@ public class DetailFragment extends Fragment {
 
 
     private void showMoviePrimaryInfo(Movie movie) {
-        if (imageViewBackdrop != null)
-            Picasso.with(getContext())
-                    .load(movie.getBackdropPath())
-                    .into(imageViewBackdrop);
+        if (draweeBackdrop != null)
+            draweeBackdrop.setImageURI(movie.getBackdropPath());
 
-        if (imageViewPoster != null)
-            Picasso.with(getContext())
-                    .load(movie.getPosterPath())
-                    .into(imageViewPoster);
+        if (draweePoster != null)
+            draweePoster.setImageURI(movie.getPosterPath());
 
         if (textViewTitle != null)
             textViewTitle.setText(movie.getTitle().toUpperCase());
@@ -106,32 +104,32 @@ public class DetailFragment extends Fragment {
     }
 
 
-    private void updateMovieDetail(long movieId) {
-        MovieDetailTask task = new MovieDetailTask(new AsyncResponse<Movie>() {
-            @Override
-            public void processFinish(Movie output) {
-                movie = output;
-
-                if (imageViewBackdrop != null)
-                    Picasso.with(getContext())
-                            .load(movie.getBackdropPath())
-                            .into(imageViewBackdrop);
-
-                if (imageViewPoster != null)
-                    Picasso.with(getContext())
-                            .load(movie.getPosterPath())
-                            .into(imageViewPoster);
-
-                if (textViewTitle != null)
-                    textViewTitle.setText(movie.getTitle().toUpperCase());
-
-                if (textViewOverview != null)
-                    textViewOverview.setText(movie.getOverview());
-
-
-            }
-        });
-
-        task.execute(movieId);
-    }
+//    private void updateMovieDetail(long movieId) {
+//        MovieDetailTask task = new MovieDetailTask(new AsyncResponse<Movie>() {
+//            @Override
+//            public void processFinish(Movie output) {
+//                movie = output;
+//
+//                if (draweeBackdrop != null)
+//                    Picasso.with(getContext())
+//                            .load(movie.getBackdropPath())
+//                            .into(draweeBackdrop);
+//
+//                if (draweePoster != null)
+//                    Picasso.with(getContext())
+//                            .load(movie.getPosterPath())
+//                            .into(draweePoster);
+//
+//                if (textViewTitle != null)
+//                    textViewTitle.setText(movie.getTitle().toUpperCase());
+//
+//                if (textViewOverview != null)
+//                    textViewOverview.setText(movie.getOverview());
+//
+//
+//            }
+//        });
+//
+//        task.execute(movieId);
+//    }
 }

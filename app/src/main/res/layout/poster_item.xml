@@ -1,12 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.facebook.drawee.view.SimpleDraweeView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:id="@+id/drawee_poster"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:scaleType="fitCenter"
+    fresco:viewAspectRatio="0.66667"
     android:adjustViewBounds="true"
-    android:id="@+id/imageview_poster"
+    android:scaleType="fitCenter"
     tools:context="adapter.PosterAdapter"
-    android:contentDescription="@string/content_description_poster">
-
-</ImageView>
+    fresco:placeholderImage="@drawable/placeholder_poster"
+    />

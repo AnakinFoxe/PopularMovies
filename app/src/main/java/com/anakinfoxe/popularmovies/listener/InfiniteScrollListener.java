@@ -3,7 +3,6 @@ package com.anakinfoxe.popularmovies.listener;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 /**
  * Inspired by
@@ -38,34 +37,34 @@ public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListen
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        int lastVisibleItemPosition = 0;
-        int totalItemCount = mLayoutManager.getItemCount();
+        // only when scrolling down, to avoid some unnecessary computation
+        if (dy > 0) {
+            int lastVisibleItemPosition = 0;
+            int totalItemCount = mLayoutManager.getItemCount();
 
-        if (mLayoutManager instanceof GridLayoutManager) {
-            lastVisibleItemPosition = ((GridLayoutManager) mLayoutManager)
-                    .findLastVisibleItemPosition();
+            if (mLayoutManager instanceof GridLayoutManager)
+                lastVisibleItemPosition = ((GridLayoutManager) mLayoutManager)
+                        .findLastVisibleItemPosition();
+            else if (mLayoutManager instanceof LinearLayoutManager)
+                lastVisibleItemPosition = ((LinearLayoutManager) mLayoutManager)
+                        .findLastVisibleItemPosition();
 
-            int visible = mLayoutManager.getChildCount();
-            Log.v("INFINITE", visible + ", " + totalItemCount);
-        } else if (mLayoutManager instanceof LinearLayoutManager)
-            lastVisibleItemPosition = ((LinearLayoutManager) mLayoutManager)
-                    .findLastVisibleItemPosition();
+            if (totalItemCount < previousTotalItemCount) {
+                this.currentPage = this.startPage;
+                this.previousTotalItemCount = totalItemCount;
+                if (totalItemCount == 0)
+                    this.isLoading = true;
+            }
 
-        if (totalItemCount < previousTotalItemCount) {
-            this.currentPage = this.startPage;
-            this.previousTotalItemCount = totalItemCount;
-            if (totalItemCount == 0)
-                this.isLoading = true;
-        }
+            if (isLoading && (totalItemCount > previousTotalItemCount)) {
+                isLoading = false;
+                previousTotalItemCount = totalItemCount;
+            }
 
-        if (isLoading && (totalItemCount > previousTotalItemCount)) {
-            isLoading = false;
-            previousTotalItemCount = totalItemCount;
-        }
-
-        if (!isLoading && (lastVisibleItemPosition + visibleThreshold) >= totalItemCount) {
-            onLoadMore(++currentPage, totalItemCount);
-            isLoading = true;
+            if (!isLoading && (lastVisibleItemPosition + visibleThreshold) >= totalItemCount) {
+                onLoadMore(++currentPage, totalItemCount);
+                isLoading = true;
+            }
         }
     }
 

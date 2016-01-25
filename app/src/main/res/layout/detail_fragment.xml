@@ -11,18 +11,21 @@
     tools:context=".DetailActivity">
 
     <LinearLayout
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
+        <com.facebook.drawee.view.SimpleDraweeView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/drawee_backdrop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            fresco:viewAspectRatio="1.77778"
             android:padding="@dimen/image_no_padding_margin"
             android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:id="@+id/imageview_backdrop"
-            android:contentDescription="@string/content_description_backdrop" />
+            fresco:placeholderImage="@drawable/placeholder_backdrop"
+            />
 
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -48,19 +51,23 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/detail_page_vertical_margin">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <com.facebook.drawee.view.SimpleDraweeView
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/drawee_poster"
                     android:layout_alignParentTop="true"
-                    android:id="@+id/imageview_poster"
-                    android:contentDescription="@string/content_description_poster"/>
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    fresco:viewAspectRatio="0.66667"
+                    android:scaleType="fitCenter"
+                    fresco:placeholderImage="@drawable/placeholder_poster"
+                    />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
-                    android:layout_toEndOf="@+id/imageview_poster"
-                    android:layout_toRightOf="@+id/imageview_poster"
+                    android:layout_toEndOf="@+id/drawee_poster"
+                    android:layout_toRightOf="@+id/drawee_poster"
                     android:textColor="@color/primaryText"
                     android:id="@+id/textview_released_date"/>
 
@@ -68,8 +75,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/textview_released_date"
-                    android:layout_toEndOf="@+id/imageview_poster"
-                    android:layout_toRightOf="@+id/imageview_poster"
+                    android:layout_toEndOf="@+id/drawee_poster"
+                    android:layout_toRightOf="@+id/drawee_poster"
                     android:textColor="@color/primaryText"
                     android:id="@+id/textview_vote_average"/>
 

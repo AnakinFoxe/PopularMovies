@@ -2,19 +2,17 @@ package com.anakinfoxe.popularmovies.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 
 import com.anakinfoxe.popularmovies.DetailActivity;
 import com.anakinfoxe.popularmovies.DetailFragment;
 import com.anakinfoxe.popularmovies.R;
 import com.anakinfoxe.popularmovies.model.Movie;
-import com.squareup.picasso.Picasso;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +38,16 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
     // view holder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public final ImageView mImageView;
+        private final SimpleDraweeView mDrawee;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mImageView = (ImageView) itemView.findViewById(R.id.imageview_poster);
+            mDrawee = (SimpleDraweeView) itemView.findViewById(R.id.drawee_poster);
+        }
+
+        public SimpleDraweeView getDrawee() {
+            return this.mDrawee;
         }
     }
 
@@ -72,15 +74,13 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(PosterAdapter.ViewHolder holder, final int position) {
-        loadImage2View(position, holder.mImageView);
+        loadImage2View(position, holder.getDrawee());
 
-        holder.mImageView.setOnClickListener(new View.OnClickListener() {
+        holder.getDrawee().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (position >= mMovies.size())
                     return;
-
-                Log.v(LOG_TAG, "position = " + position + " of total = " + mMovies.size());
 
                 Movie movie = mMovies.get(position);
                 if (movie != null) {
@@ -100,11 +100,11 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
     }
 
 
-    private void loadImage2View(int position, ImageView imageView) {
+    private void loadImage2View(int position, SimpleDraweeView drawee) {
         if (position >= mMovies.size())
             return;
 
-        String url = mMovies.get(position).getPosterPath();
-        Picasso.with(mContext).load(url).into(imageView);
+        Uri uri = mMovies.get(position).getPosterPath();
+        drawee.setImageURI(uri);
     }
 }
