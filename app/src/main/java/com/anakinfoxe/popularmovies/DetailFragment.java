@@ -6,15 +6,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.anakinfoxe.popularmovies.async.AsyncResponse;
-import com.anakinfoxe.popularmovies.async.MovieDetailTask;
 import com.anakinfoxe.popularmovies.model.Movie;
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.squareup.picasso.Picasso;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
