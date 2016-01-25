@@ -37,34 +37,31 @@ public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListen
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        // only when scrolling down, to avoid some unnecessary computation
-        if (dy > 0) {
-            int lastVisibleItemPosition = 0;
-            int totalItemCount = mLayoutManager.getItemCount();
+        int lastVisibleItemPosition = 0;
+        int totalItemCount = mLayoutManager.getItemCount();
 
-            if (mLayoutManager instanceof GridLayoutManager)
-                lastVisibleItemPosition = ((GridLayoutManager) mLayoutManager)
-                        .findLastVisibleItemPosition();
-            else if (mLayoutManager instanceof LinearLayoutManager)
-                lastVisibleItemPosition = ((LinearLayoutManager) mLayoutManager)
-                        .findLastVisibleItemPosition();
+        if (mLayoutManager instanceof GridLayoutManager)
+            lastVisibleItemPosition = ((GridLayoutManager) mLayoutManager)
+                    .findLastVisibleItemPosition();
+        else if (mLayoutManager instanceof LinearLayoutManager)
+            lastVisibleItemPosition = ((LinearLayoutManager) mLayoutManager)
+                    .findLastVisibleItemPosition();
 
-            if (totalItemCount < previousTotalItemCount) {
-                this.currentPage = this.startPage;
-                this.previousTotalItemCount = totalItemCount;
-                if (totalItemCount == 0)
-                    this.isLoading = true;
-            }
+        if (totalItemCount < previousTotalItemCount) {
+            this.currentPage = this.startPage;
+            this.previousTotalItemCount = totalItemCount;
+            if (totalItemCount == 0)
+                this.isLoading = true;
+        }
 
-            if (isLoading && (totalItemCount > previousTotalItemCount)) {
-                isLoading = false;
-                previousTotalItemCount = totalItemCount;
-            }
+        if (isLoading && (totalItemCount > previousTotalItemCount)) {
+            isLoading = false;
+            previousTotalItemCount = totalItemCount;
+        }
 
-            if (!isLoading && (lastVisibleItemPosition + VISIBLE_THRESHOLD) >= totalItemCount) {
-                onLoadMore(++currentPage, totalItemCount);
-                isLoading = true;
-            }
+        if (!isLoading && (lastVisibleItemPosition + VISIBLE_THRESHOLD) >= totalItemCount) {
+            onLoadMore(++currentPage, totalItemCount);
+            isLoading = true;
         }
     }
 

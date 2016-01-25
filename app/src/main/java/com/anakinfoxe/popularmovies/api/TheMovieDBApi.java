@@ -29,6 +29,9 @@ import java.util.Locale;
 public class TheMovieDBApi {
     // TODO: use Gson to replace org.json
 
+    public static final int SORTING_BY_POPULARITY   = 1;
+    public static final int SORTING_BY_RATING       = 3;
+
     // themoviedb.org api key
     // register an account to obtain it at https://www.themoviedb.org/
     private static final String API_KEY             = BuildConfig.THE_MOVIE_DB_API_KEY;
@@ -38,19 +41,20 @@ public class TheMovieDBApi {
     private static final String POSTER_BASE_URL     = "http://image.tmdb.org/t/p/w342";
     private static final String BACKDROP_BASE_URL   = "http://image.tmdb.org/t/p/w780";
 
-    private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", new Locale("en"));
+    private static SimpleDateFormat formatter =
+            new SimpleDateFormat("yyyy-MM-dd", new Locale("en"));
 
 
-    public static List<Movie> getMovies(String logTag, int pageNum) {
+    public static List<Movie> getMovies(String logTag, int sortingType, int pageNum) {
         URL url = null;
 
-        Log.v(logTag, "Getting movie list page " + pageNum);
+        Log.v(logTag, "Getting " + getSortingStr(sortingType) + " movie list page " + pageNum);
 
         try {
             // construct url
             Uri.Builder builder = Uri.parse(API_BASE_URL)
                     .buildUpon()
-                    .appendPath("popular")
+                    .appendPath(getSortingStr(sortingType))
                     .appendQueryParameter("page", String.valueOf(pageNum))
                     .appendQueryParameter("api_key", API_KEY);
             url = new URL(builder.build().toString());
@@ -207,5 +211,15 @@ public class TheMovieDBApi {
         }
 
         return null;
+    }
+
+    private static String getSortingStr(int sortingType) {
+        switch (sortingType) {
+            case SORTING_BY_RATING:
+                return "top_rated";
+            case SORTING_BY_POPULARITY:
+            default:    // default using popularity
+                return "popular";
+        }
     }
 }

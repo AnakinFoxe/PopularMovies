@@ -22,7 +22,7 @@ public class MovieListTask extends AsyncTask<Integer, Void, List<Movie>> {
 
     @Override
     protected List<Movie> doInBackground(Integer... params) {
-        return TheMovieDBApi.getMovies(LOG_TAG, params[0]);
+        return TheMovieDBApi.getMovies(LOG_TAG, params[0], params[1]);
     }
 
     @Override

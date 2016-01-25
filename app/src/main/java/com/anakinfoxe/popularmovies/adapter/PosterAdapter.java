@@ -13,6 +13,8 @@ import com.anakinfoxe.popularmovies.DetailFragment;
 import com.anakinfoxe.popularmovies.R;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +75,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(PosterAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final PosterAdapter.ViewHolder holder, final int position) {
         loadImage2View(position, holder.getDrawee());
 
         holder.getDrawee().setOnClickListener(new View.OnClickListener() {
