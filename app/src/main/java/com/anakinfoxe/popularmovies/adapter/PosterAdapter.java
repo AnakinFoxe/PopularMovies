@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,8 +14,6 @@ import com.anakinfoxe.popularmovies.DetailFragment;
 import com.anakinfoxe.popularmovies.R;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,13 +2,13 @@ package com.anakinfoxe.popularmovies;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
@@ -34,9 +34,10 @@ public class PosterFragment extends Fragment {
     private PosterAdapter mPosterAdapter;
 
     private int sortingType = TheMovieDBApi.SORTING_BY_POPULARITY;
-    private FloatingActionsMenu famPoster;
-    private FloatingActionButton fabSorting;
-    private FloatingActionButton fabFavorite;
+    private FloatingActionsMenu mFamPoster;
+    private FloatingActionButton mFabSorting;
+    private FloatingActionButton mFabFavorite;
+    private FrameLayout mFlInterceptor;
 
     public PosterFragment() {
 
@@ -67,7 +68,10 @@ public class PosterFragment extends Fragment {
         // set recycler view adapter
         rv.setAdapter(mPosterAdapter);
 
-        rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 1) {
+        updatePosters(sortingType, 1);
+
+        // TODO: kind of ugly to use 1 for the first loading and setup 2 for the listener
+        rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 2) {
             @Override
             public void onLoadMore(int page, int totalItemCount) {
                 updatePosters(sortingType, page);
@@ -76,23 +80,6 @@ public class PosterFragment extends Fragment {
 
         // setup floating action buttons
         setupFab();
-
-        rv.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                Log.v(LOG_TAG, "isExpanded=" + famPoster.isExpanded());
-                if (famPoster.isExpanded()) {
-                    famPoster.collapse();
-
-                    Log.v(LOG_TAG, "it is expanded!");
-
-                    return true;
-                }
-
-                return false;
-            }
-        });
 
         return rv;
     }
@@ -103,7 +90,7 @@ public class PosterFragment extends Fragment {
         super.onStart();
 
         // update posters when program starts
-        updatePosters(sortingType, 1);
+//        updatePosters(sortingType, 1);
     }
 
     private void updatePosters(int sortingType, int pageNum) {
@@ -128,30 +115,50 @@ public class PosterFragment extends Fragment {
         task.execute(sortingType, pageNum);
     }
 
+
+
     private void setupFab() {
-        famPoster = (FloatingActionsMenu) getActivity().findViewById(R.id.fam_poster);
-        fabSorting = (FloatingActionButton) getActivity().findViewById(R.id.fab_sorting);
-        fabFavorite = (FloatingActionButton) getActivity().findViewById(R.id.fab_favorite);
+        mFamPoster = (FloatingActionsMenu) getActivity().findViewById(R.id.fam_poster);
+        mFabSorting = (FloatingActionButton) getActivity().findViewById(R.id.fab_sorting);
+        mFabFavorite = (FloatingActionButton) getActivity().findViewById(R.id.fab_favorite);
+        mFlInterceptor = (FrameLayout) getActivity().findViewById(R.id.fl_interceptor);
+
+        mFlInterceptor.setBackgroundColor(ContextCompat.getColor(getContext(),
+                R.color.black_semi_transparent));
+        mFlInterceptor.setClickable(false);
+        mFlInterceptor.setVisibility(View.GONE);
+        mFlInterceptor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFamPoster.collapse();
+            }
+        });
 
 
-        famPoster.setOnFloatingActionsMenuUpdateListener(
+        mFamPoster.setOnFloatingActionsMenuUpdateListener(
                 new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
                     @Override
                     public void onMenuExpanded() {
+                        mFlInterceptor.setClickable(true);
+                        mFlInterceptor.setVisibility(View.VISIBLE);
+
+
                         if (sortingType == TheMovieDBApi.SORTING_BY_POPULARITY)
-                            fabSorting.setTitle("Sort by Rating");
+                            mFabSorting.setTitle("Sort by Rating");
                         else if (sortingType == TheMovieDBApi.SORTING_BY_RATING)
-                            fabSorting.setTitle("Sort by Popularity");
+                            mFabSorting.setTitle("Sort by Popularity");
                     }
 
                     @Override
                     public void onMenuCollapsed() {
                         // do nothing
+                        mFlInterceptor.setClickable(false);
+                        mFlInterceptor.setVisibility(View.GONE);
                     }
                 });
 
 
-        fabSorting.setOnClickListener(new View.OnClickListener() {
+        mFabSorting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // flip
@@ -162,18 +169,18 @@ public class PosterFragment extends Fragment {
                 replacePosters(sortingType, 1);
 
                 // collapse fam
-//                famPoster.collapse();
+                mFamPoster.collapse();
             }
         });
 
-        fabFavorite.setOnClickListener(new View.OnClickListener() {
+        mFabFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "Ta-dah!! TODO in next stage!", Toast.LENGTH_SHORT)
                         .show();
 
                 // collapse fam
-//                famPoster.collapse();
+                mFamPoster.collapse();
             }
         });
     }

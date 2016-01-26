@@ -216,6 +216,8 @@ public class TheMovieDBApi {
     private static String getSortingStr(int sortingType) {
         switch (sortingType) {
             case SORTING_BY_RATING:
+                // using movie/top_rated instead of discover/movie?sort_by=vote_average
+                // is because this list only include movies that have 50 or more votes
                 return "top_rated";
             case SORTING_BY_POPULARITY:
             default:    // default using popularity
