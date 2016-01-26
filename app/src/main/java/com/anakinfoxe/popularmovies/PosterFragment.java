@@ -123,10 +123,7 @@ public class PosterFragment extends Fragment {
         mFabFavorite = (FloatingActionButton) getActivity().findViewById(R.id.fab_favorite);
         mFlInterceptor = (FrameLayout) getActivity().findViewById(R.id.fl_interceptor);
 
-        mFlInterceptor.setBackgroundColor(ContextCompat.getColor(getContext(),
-                R.color.black_semi_transparent));
-        mFlInterceptor.setClickable(false);
-        mFlInterceptor.setVisibility(View.GONE);
+        // interceptor will intercept the click event when fam is expanded
         mFlInterceptor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,19 +136,24 @@ public class PosterFragment extends Fragment {
                 new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
                     @Override
                     public void onMenuExpanded() {
+                        // display the interceptor when fam is expanded
                         mFlInterceptor.setClickable(true);
                         mFlInterceptor.setVisibility(View.VISIBLE);
 
-
-                        if (sortingType == TheMovieDBApi.SORTING_BY_POPULARITY)
+                        if (sortingType == TheMovieDBApi.SORTING_BY_POPULARITY) {
                             mFabSorting.setTitle("Sort by Rating");
-                        else if (sortingType == TheMovieDBApi.SORTING_BY_RATING)
+                            mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
+                                    R.drawable.ic_star_rate_white_18dp));
+                        } else if (sortingType == TheMovieDBApi.SORTING_BY_RATING) {
                             mFabSorting.setTitle("Sort by Popularity");
+                            mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
+                                    R.drawable.ic_trending_up_white_18dp));
+                        }
                     }
 
                     @Override
                     public void onMenuCollapsed() {
-                        // do nothing
+                        // dispel the interceptor when fam is collapsed
                         mFlInterceptor.setClickable(false);
                         mFlInterceptor.setVisibility(View.GONE);
                     }

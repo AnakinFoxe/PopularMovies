@@ -15,9 +15,9 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:elevation="12dp"
-        fab:fab_addButtonColorNormal="@color/white"
-        fab:fab_addButtonColorPressed="@color/white_pressed"
-        fab:fab_addButtonPlusIconColor="@color/half_black"
+        fab:fab_addButtonColorNormal="@color/pink"
+        fab:fab_addButtonColorPressed="@color/pink_pressed"
+        fab:fab_addButtonPlusIconColor="@color/white"
         fab:fab_labelStyle="@style/menu_labels_style"
         fab:fab_labelsPosition="left"
         android:layout_marginBottom="16dp"
@@ -29,18 +29,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_size="mini"
-            fab:fab_colorNormal="@color/white"
             fab:fab_title="Favorite"
-            fab:fab_colorPressed="@color/white_pressed"/>
+            fab:fab_icon="@drawable/ic_favorite_white_18dp"
+            fab:fab_colorNormal="@color/grey"
+            fab:fab_colorPressed="@color/grey_pressed"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_sorting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_size="mini"
-            fab:fab_colorNormal="@color/white"
             fab:fab_title="Sorting"
-            fab:fab_colorPressed="@color/white_pressed"/>
+            fab:fab_icon="@drawable/ic_star_rate_white_18dp"
+            fab:fab_colorNormal="@color/grey"
+            fab:fab_colorPressed="@color/grey_pressed"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
@@ -48,6 +50,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="1dp"
+        android:background="@color/black_semi_transparent"
+        android:clickable="false"
+        android:visibility="gone"
         android:descendantFocusability="blocksDescendants"
         android:id="@+id/fl_interceptor"/>
 
