@@ -11,38 +11,32 @@
         android:id="@+id/fam_poster"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:elevation="12dp"
+        style="@style/primaryFAB"
         fab:fab_addButtonColorNormal="@color/pink"
-        fab:fab_addButtonColorPressed="@color/pink_pressed"
+        fab:fab_addButtonColorPressed="@color/pinkPressed"
         fab:fab_addButtonPlusIconColor="@color/white"
-        fab:fab_labelStyle="@style/menu_labels_style"
-        fab:fab_labelsPosition="left"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp">
+        fab:fab_labelStyle="@style/menuLableStyle"
+        fab:fab_labelsPosition="left" >
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_favorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_size="mini"
-            fab:fab_title="Favorite"
+            fab:fab_title="@string/fab_favorite"
             fab:fab_icon="@drawable/ic_favorite_white_18dp"
             fab:fab_colorNormal="@color/grey"
-            fab:fab_colorPressed="@color/grey_pressed"/>
+            fab:fab_colorPressed="@color/greyPressed"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_sorting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_size="mini"
-            fab:fab_title="Sorting"
+            fab:fab_title="@string/fab_sort_default"
             fab:fab_icon="@drawable/ic_star_rate_white_18dp"
             fab:fab_colorNormal="@color/grey"
-            fab:fab_colorPressed="@color/grey_pressed"/>
+            fab:fab_colorPressed="@color/greyPressed"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
@@ -50,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="1dp"
-        android:background="@color/black_semi_transparent"
+        android:background="@color/blackSemiTransparent"
         android:clickable="false"
         android:visibility="gone"
         android:descendantFocusability="blocksDescendants"

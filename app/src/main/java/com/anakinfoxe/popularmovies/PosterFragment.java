@@ -141,11 +141,13 @@ public class PosterFragment extends Fragment {
                         mFlInterceptor.setVisibility(View.VISIBLE);
 
                         if (sortingType == TheMovieDBApi.SORTING_BY_POPULARITY) {
-                            mFabSorting.setTitle("Highest Rated");
+                            mFabSorting.setTitle(getResources()
+                                    .getString(R.string.fab_sort_by_rating));
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
                                     R.drawable.ic_star_rate_white_18dp));
                         } else if (sortingType == TheMovieDBApi.SORTING_BY_RATING) {
-                            mFabSorting.setTitle("Most Popular");
+                            mFabSorting.setTitle(getResources()
+                                    .getString(R.string.fab_sort_by_popularity));
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
                                     R.drawable.ic_trending_up_white_18dp));
                         }

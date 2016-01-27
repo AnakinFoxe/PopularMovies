@@ -5,9 +5,8 @@
     android:id="@+id/drawee_poster"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    style="@style/primaryImage"
     fresco:viewAspectRatio="0.66667"
-    android:adjustViewBounds="true"
-    android:scaleType="fitCenter"
-    tools:context="adapter.PosterAdapter"
     fresco:placeholderImage="@drawable/placeholder_poster"
+    tools:context="adapter.PosterAdapter"
     />

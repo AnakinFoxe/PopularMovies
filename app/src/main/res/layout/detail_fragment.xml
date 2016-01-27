@@ -21,9 +21,8 @@
             android:id="@+id/drawee_backdrop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/primaryImage"
             fresco:viewAspectRatio="1.77778"
-            android:padding="@dimen/image_no_padding_margin"
-            android:scaleType="fitCenter"
             fresco:placeholderImage="@drawable/placeholder_backdrop"
             />
 
@@ -59,7 +58,7 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     fresco:viewAspectRatio="0.66667"
-                    android:scaleType="fitCenter"
+                    style="@style/primaryImage"
                     fresco:placeholderImage="@drawable/placeholder_poster"
                     />
 
@@ -86,8 +85,6 @@
                     android:textSize="@dimen/overview_text_size"
                     android:textColor="@color/primaryText"
                     android:id="@+id/textview_vote_average"/>
-
-
 
             </RelativeLayout>
 

@@ -8,12 +8,15 @@
     <color name="primaryText">#000000</color>
 
     <!-- For FAB -->
-    <color name="black_semi_transparent">#B2000000</color>
-    <color name="white">#fafafa</color>
-    <color name="white_pressed">#f1f1f1</color>
-    <color name="grey">#9e9e9e</color>
-    <color name="grey_pressed">#bdbdbd</color>
-    <color name="pink">#e91e63</color>
-    <color name="pink_pressed">#ec407a</color>
+    <color name="blackSemiTransparent">#B2000000</color>
+    <color name="pinkSemiTransparent">#66E91E63</color>
+    <color name="pinkPressedSemiTransparent">#66EC407A</color>
+    <color name="white">#FAFAFA</color>
+    <color name="whitePressed">#F1F1F1</color>
+    <color name="grey">#9E9E9E</color>
+    <color name="greyPressed">#BDBDBD</color>
+    <color name="pink">#E91E63</color>
+    <color name="pinkPressed">#EC407A</color>
+
 
 </resources>
