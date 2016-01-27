@@ -5,6 +5,9 @@
 
     <dimen name="image_no_padding_margin">0dp</dimen>
 
+    <dimen name="poster_width_in_main">185dp</dimen>
+    <dimen name="poster_width_in_detail">120dp</dimen>
+
     <dimen name="detail_page_horizontal_margin">16dp</dimen>
     <dimen name="detail_page_vertical_margin">16dp</dimen>
 

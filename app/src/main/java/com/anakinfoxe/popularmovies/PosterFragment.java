@@ -1,5 +1,6 @@
 package com.anakinfoxe.popularmovies;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -56,8 +58,11 @@ public class PosterFragment extends Fragment {
                 .inflate(R.layout.poster_fragment, container, false);
 
         // instantiate layout manager
-        // TODO: make spanCount adaptive to dimension
-        mLayoutManager = new GridLayoutManager(rv.getContext(), 2);
+        if (getActivity().getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_PORTRAIT)
+            mLayoutManager = new GridLayoutManager(rv.getContext(), 2);
+        else
+            mLayoutManager = new GridLayoutManager(rv.getContext(), 3);
 
         // set layout manager
         rv.setLayoutManager(mLayoutManager);
@@ -68,10 +73,11 @@ public class PosterFragment extends Fragment {
         // set recycler view adapter
         rv.setAdapter(mPosterAdapter);
 
-        updatePosters(sortingType, 1);
+        // init date
+        replacePosters(sortingType, 1);
 
-        // TODO: kind of ugly to use 1 for the first loading and setup 2 for the listener
-        rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 2) {
+        // set OnScrollListener to load more data
+        rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 1) {
             @Override
             public void onLoadMore(int page, int totalItemCount) {
                 updatePosters(sortingType, page);
@@ -84,14 +90,6 @@ public class PosterFragment extends Fragment {
         return rv;
     }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // update posters when program starts
-//        updatePosters(sortingType, 1);
-    }
 
     private void updatePosters(int sortingType, int pageNum) {
         MovieListTask task = new MovieListTask(new AsyncResponse<List<Movie>>() {
