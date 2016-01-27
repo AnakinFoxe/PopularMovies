@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
 import com.anakinfoxe.popularmovies.api.TheMovieDBApi;
 import com.anakinfoxe.popularmovies.async.AsyncResponse;
+import com.anakinfoxe.popularmovies.async.AsyncResult;
 import com.anakinfoxe.popularmovies.async.MovieListTask;
 import com.anakinfoxe.popularmovies.listener.InfiniteScrollListener;
 import com.anakinfoxe.popularmovies.model.Movie;
@@ -92,26 +92,34 @@ public class PosterFragment extends Fragment {
 
 
     private void updatePosters(int sortingType, int pageNum) {
-        Log.v(LOG_TAG, "updatePosters = " + pageNum);
-        MovieListTask task = new MovieListTask(new AsyncResponse<List<Movie>>() {
-            @Override
-            public void processFinish(List<Movie> output) {
-                if (output != null)
-                    mPosterAdapter.addMovies(output);
-            }
+        MovieListTask task = new MovieListTask(getContext(),
+                new AsyncResponse<AsyncResult<List<Movie>>>() {
+                    @Override
+                    public void processFinish(AsyncResult<List<Movie>> output) {
+                        if (output.hasError())
+                            Toast.makeText(getContext(), output.getErrorMsg(), Toast.LENGTH_SHORT)
+                                    .show();
+                        else
+                            mPosterAdapter.addMovies(output.getResult());
+                    }
+
         });
         task.execute(sortingType, pageNum);
     }
 
     private void replacePosters(int sortingType, int pageNum) {
-        Log.v(LOG_TAG, "replacePosters = " + pageNum);
-        MovieListTask task = new MovieListTask(new AsyncResponse<List<Movie>>() {
-            @Override
-            public void processFinish(List<Movie> output) {
-                if (output != null)
-                    mPosterAdapter.setMovies(output);
-            }
-        });
+        MovieListTask task = new MovieListTask(getContext(),
+                new AsyncResponse<AsyncResult<List<Movie>>>() {
+                    @Override
+                    public void processFinish(AsyncResult<List<Movie>> output) {
+                        if (output.hasError())
+                            Toast.makeText(getContext(), output.getErrorMsg(), Toast.LENGTH_SHORT)
+                                    .show();
+                        else
+                            mPosterAdapter.setMovies(output.getResult());
+                    }
+
+                });
         task.execute(sortingType, pageNum);
     }
 
