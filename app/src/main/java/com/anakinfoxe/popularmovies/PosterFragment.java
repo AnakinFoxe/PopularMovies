@@ -6,10 +6,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -77,7 +77,7 @@ public class PosterFragment extends Fragment {
         replacePosters(sortingType, 1);
 
         // set OnScrollListener to load more data
-        rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 1) {
+        rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 2) {
             @Override
             public void onLoadMore(int page, int totalItemCount) {
                 updatePosters(sortingType, page);
@@ -92,6 +92,7 @@ public class PosterFragment extends Fragment {
 
 
     private void updatePosters(int sortingType, int pageNum) {
+        Log.v(LOG_TAG, "updatePosters = " + pageNum);
         MovieListTask task = new MovieListTask(new AsyncResponse<List<Movie>>() {
             @Override
             public void processFinish(List<Movie> output) {
@@ -103,6 +104,7 @@ public class PosterFragment extends Fragment {
     }
 
     private void replacePosters(int sortingType, int pageNum) {
+        Log.v(LOG_TAG, "replacePosters = " + pageNum);
         MovieListTask task = new MovieListTask(new AsyncResponse<List<Movie>>() {
             @Override
             public void processFinish(List<Movie> output) {

@@ -27,11 +27,13 @@ public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListen
     public InfiniteScrollListener(GridLayoutManager layoutManager, int startPage) {
         this.mLayoutManager = layoutManager;
         this.startPage = startPage;
+        this.currentPage = startPage;
     }
 
     public InfiniteScrollListener(LinearLayoutManager layoutManager, int startPage) {
         this.mLayoutManager = layoutManager;
         this.startPage = startPage;
+        this.currentPage = startPage;
     }
 
 
@@ -60,7 +62,7 @@ public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListen
         }
 
         if (!isLoading && (lastVisibleItemPosition + VISIBLE_THRESHOLD) >= totalItemCount) {
-            onLoadMore(++currentPage, totalItemCount);
+            onLoadMore(currentPage++, totalItemCount);
             isLoading = true;
         }
     }
