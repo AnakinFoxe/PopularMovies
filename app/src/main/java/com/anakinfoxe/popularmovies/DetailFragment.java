@@ -3,7 +3,16 @@ package com.anakinfoxe.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -25,14 +34,7 @@ public class DetailFragment extends Fragment {
 
     public static final String MOVIE_OBJECT = "movieObject";
 
-    private Movie movie = null;
-
-    private SimpleDraweeView draweeBackdrop = null;
-    private SimpleDraweeView draweePoster = null;
-    private TextView textViewTitle = null;
-    private TextView textViewOverview = null;
-    private TextView textViewReleasedDate = null;
-    private TextView textViewVoteAverage = null;
+    private Movie mMovie;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", new Locale("en"));
     private DecimalFormat df = new DecimalFormat("#.#");
@@ -44,7 +46,7 @@ public class DetailFragment extends Fragment {
         df.setRoundingMode(RoundingMode.HALF_EVEN);
 
         // this fragment will have option menu
-//        setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -52,79 +54,74 @@ public class DetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.detail_fragment, container, false);
 
         Intent intent = getActivity().getIntent();
-        if (intent != null) {
-            if (movie == null)
-                movie = intent.getExtras().getParcelable(MOVIE_OBJECT);
+        if (intent != null && intent.hasExtra(MOVIE_OBJECT)) {
+            mMovie = intent.getExtras().getParcelable(MOVIE_OBJECT);
 
-            draweeBackdrop = (SimpleDraweeView) rootView.findViewById(R.id.drawee_backdrop);
-            draweePoster = (SimpleDraweeView) rootView.findViewById(R.id.drawee_poster);
-            textViewTitle = (TextView) rootView.findViewById(R.id.textview_title);
-            textViewOverview = (TextView) rootView.findViewById(R.id.textview_overview);
-            textViewReleasedDate = (TextView) rootView.findViewById(R.id.textview_released_date);
-            textViewVoteAverage = (TextView) rootView.findViewById(R.id.textview_vote_average);
-
-            showMoviePrimaryInfo(movie);
+            showMoviePrimaryInfo(rootView, mMovie);
         }
 
         return rootView;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_detail, menu);
 
-//        if (movie != null)
-//            updateMovieDetail(movie.getId());
+        MenuItem share = menu.findItem(R.id.action_share);
+        ShareActionProvider shareAP =
+                (ShareActionProvider) MenuItemCompat.getActionProvider(share);
+
+        if (shareAP != null)
+            shareAP.setShareIntent(createShareDetailIntent(mMovie));
+        else
+            Log.d(LOG_TAG, "Share Action Provider is null?");
     }
 
 
-    private void showMoviePrimaryInfo(Movie movie) {
-        if (draweeBackdrop != null)
-            draweeBackdrop.setImageURI(movie.getBackdropPath());
+    private void showMoviePrimaryInfo(View rootView, Movie movie) {
+        ((SimpleDraweeView) rootView.findViewById(R.id.drawee_backdrop))
+                .setImageURI(movie.getBackdropPath());
 
-        if (draweePoster != null)
-            draweePoster.setImageURI(movie.getPosterPath());
+        ((SimpleDraweeView) rootView.findViewById(R.id.drawee_poster))
+                .setImageURI(movie.getPosterPath());
 
-        if (textViewTitle != null)
-            textViewTitle.setText(movie.getTitle().toUpperCase());
+        ((TextView) rootView.findViewById(R.id.textview_title))
+                .setText(movie.getTitle().toUpperCase());
 
-        if (textViewOverview != null)
-            textViewOverview.setText(movie.getOverview());
+        ((TextView) rootView.findViewById(R.id.textview_overview))
+                .setText(movie.getOverview());
 
-        if (textViewReleasedDate != null)
-            textViewReleasedDate.setText(sdf.format(movie.getReleaseDate()));
+        ((TextView) rootView.findViewById(R.id.textview_released_date))
+                .setText(sdf.format(movie.getReleaseDate()));
 
-        if (textViewVoteAverage != null)
-            textViewVoteAverage.setText(df.format(movie.getVoteAverage()));
+        // show different size of text
+        String text = df.format(movie.getVoteAverage()) + "/10";
+        SpannableString ss = new SpannableString(text);
+        int textSize = getResources().getDimensionPixelSize(R.dimen.vote_average_text_size);
+        ss.setSpan(new AbsoluteSizeSpan(textSize),
+                0, text.length() - 3, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        ((TextView) rootView.findViewById(R.id.textview_vote_average))
+                .setText(ss);
     }
 
 
-//    private void updateMovieDetail(long movieId) {
-//        MovieDetailTask task = new MovieDetailTask(new AsyncResponse<Movie>() {
-//            @Override
-//            public void processFinish(Movie output) {
-//                movie = output;
-//
-//                if (draweeBackdrop != null)
-//                    Picasso.with(getContext())
-//                            .load(movie.getBackdropPath())
-//                            .into(draweeBackdrop);
-//
-//                if (draweePoster != null)
-//                    Picasso.with(getContext())
-//                            .load(movie.getPosterPath())
-//                            .into(draweePoster);
-//
-//                if (textViewTitle != null)
-//                    textViewTitle.setText(movie.getTitle().toUpperCase());
-//
-//                if (textViewOverview != null)
-//                    textViewOverview.setText(movie.getOverview());
-//
-//
-//            }
-//        });
-//
-//        task.execute(movieId);
-//    }
+    private Intent createShareDetailIntent(Movie movie) {
+        // compose content text
+        StringBuilder sb = new StringBuilder();
+        sb.append("Check out movie: ")
+                .append(movie.getOriginalTitle())
+                .append(" (rating ")
+                .append(df.format(movie.getVoteAverage()))
+                .append(") http://www.themoviedb.org/movie/")
+                .append(movie.getId());
+
+        // send intent
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
+
+        return shareIntent;
+    }
 }

@@ -41,6 +41,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/detail_page_vertical_margin"
                 android:textSize="@dimen/title_text_size"
                 android:textColor="@color/primaryText"
                 android:id="@+id/textview_title"/>
@@ -68,6 +69,9 @@
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@+id/drawee_poster"
                     android:layout_toRightOf="@+id/drawee_poster"
+                    android:paddingLeft="@dimen/detail_page_horizontal_margin"
+                    android:paddingRight="@dimen/detail_page_horizontal_margin"
+                    android:textSize="@dimen/released_date_text_size"
                     android:textColor="@color/primaryText"
                     android:id="@+id/textview_released_date"/>
 
@@ -77,6 +81,9 @@
                     android:layout_below="@+id/textview_released_date"
                     android:layout_toEndOf="@+id/drawee_poster"
                     android:layout_toRightOf="@+id/drawee_poster"
+                    android:paddingLeft="@dimen/detail_page_horizontal_margin"
+                    android:paddingRight="@dimen/detail_page_horizontal_margin"
+                    android:textSize="@dimen/overview_text_size"
                     android:textColor="@color/primaryText"
                     android:id="@+id/textview_vote_average"/>
 

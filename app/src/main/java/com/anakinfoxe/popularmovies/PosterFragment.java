@@ -141,11 +141,11 @@ public class PosterFragment extends Fragment {
                         mFlInterceptor.setVisibility(View.VISIBLE);
 
                         if (sortingType == TheMovieDBApi.SORTING_BY_POPULARITY) {
-                            mFabSorting.setTitle("Sort by Rating");
+                            mFabSorting.setTitle("Highest Rated");
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
                                     R.drawable.ic_star_rate_white_18dp));
                         } else if (sortingType == TheMovieDBApi.SORTING_BY_RATING) {
-                            mFabSorting.setTitle("Sort by Popularity");
+                            mFabSorting.setTitle("Most Popular");
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
                                     R.drawable.ic_trending_up_white_18dp));
                         }
@@ -178,7 +178,7 @@ public class PosterFragment extends Fragment {
         mFabFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Ta-dah!! TODO in next stage!", Toast.LENGTH_SHORT)
+                Toast.makeText(getActivity(), "Oops!! TODO in next stage!", Toast.LENGTH_SHORT)
                         .show();
 
                 // collapse fam
