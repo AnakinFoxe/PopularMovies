@@ -31,7 +31,7 @@ public class PosterFragment extends Fragment {
 
     private static final String LOG_TAG = PosterFragment.class.getSimpleName();
 
-    private GridLayoutManager mLayoutManager;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     private PosterAdapter mPosterAdapter;
 

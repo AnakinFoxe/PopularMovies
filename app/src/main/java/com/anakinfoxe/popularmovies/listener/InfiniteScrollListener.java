@@ -24,13 +24,7 @@ public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListen
     private RecyclerView.LayoutManager mLayoutManager;
 
 
-    public InfiniteScrollListener(GridLayoutManager layoutManager, int startPage) {
-        this.mLayoutManager = layoutManager;
-        this.startPage = startPage;
-        this.currentPage = startPage;
-    }
-
-    public InfiniteScrollListener(LinearLayoutManager layoutManager, int startPage) {
+    public InfiniteScrollListener(RecyclerView.LayoutManager layoutManager, int startPage) {
         this.mLayoutManager = layoutManager;
         this.startPage = startPage;
         this.currentPage = startPage;
