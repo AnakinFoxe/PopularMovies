@@ -4,6 +4,9 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 /**
@@ -11,31 +14,51 @@ import java.util.Date;
  */
 public class Movie implements Parcelable {
 
+    @SerializedName("adult")
+    @Expose
     private boolean adult;
 
     // TODO: change from only one backdrop to multiple backdrops
     private Uri backdropPath;
 
+    @SerializedName("homepage")
+    @Expose
     private String homepage;
 
+    @SerializedName("id")
+    @Expose
     private long id;
 
+    @SerializedName("original_title")
+    @Expose
     private String originalTitle;
 
+    @SerializedName("overview")
+    @Expose
     private String overview;
 
+    @SerializedName("popularity")
+    @Expose
     private double popularity;
 
     private Uri posterPath;
 
     private Date releaseDate;
 
-    private int runtime;
+    @SerializedName("runtime")
+    @Expose
+    private long runtime;
 
+    @SerializedName("title")
+    @Expose
     private String title;
 
+    @SerializedName("vote_average")
+    @Expose
     private double voteAverage;
 
+    @SerializedName("vote_count")
+    @Expose
     private long voteCount;
 
     public Movie() {
@@ -113,11 +136,11 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
     }
 
-    public int getRuntime() {
+    public long getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(int runtime) {
+    public void setRuntime(long runtime) {
         this.runtime = runtime;
     }
 
@@ -146,7 +169,6 @@ public class Movie implements Parcelable {
     }
 
 
-
     /* following part for Parcelable */
 
     protected Movie(Parcel in) {
@@ -160,7 +182,7 @@ public class Movie implements Parcelable {
         posterPath = Uri.parse(in.readString());
         long tmpReleaseDate = in.readLong();
         releaseDate = tmpReleaseDate != -1L ? new Date(tmpReleaseDate) : null;
-        runtime = in.readInt();
+        runtime = in.readLong();
         title = in.readString();
         voteAverage = in.readDouble();
         voteCount = in.readLong();
@@ -183,7 +205,7 @@ public class Movie implements Parcelable {
         dest.writeDouble(popularity);
         dest.writeString(posterPath.toString());
         dest.writeLong(releaseDate != null ? releaseDate.getTime() : -1L);
-        dest.writeInt(runtime);
+        dest.writeLong(runtime);
         dest.writeString(title);
         dest.writeDouble(voteAverage);
         dest.writeLong(voteCount);

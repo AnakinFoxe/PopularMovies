@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,15 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
-import com.anakinfoxe.popularmovies.api.TheMovieDBApi;
-import com.anakinfoxe.popularmovies.async.AsyncResponse;
-import com.anakinfoxe.popularmovies.async.AsyncResult;
-import com.anakinfoxe.popularmovies.async.MovieListTask;
+import com.anakinfoxe.popularmovies.async.MovieClient;
+import com.anakinfoxe.popularmovies.async.MovieService;
 import com.anakinfoxe.popularmovies.listener.InfiniteScrollListener;
-import com.anakinfoxe.popularmovies.model.Movie;
+import com.anakinfoxe.popularmovies.model.Response;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
-import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 /**
  * Created by xing on 1/18/16.
@@ -31,11 +31,15 @@ public class PosterFragment extends Fragment {
 
     private static final String LOG_TAG = PosterFragment.class.getSimpleName();
 
+    private static final String SORTING_BY_POPULARITY   = "popular";
+    private static final String SORTING_BY_RATING       = "top_rated";
+    private static final String API_KEY                 = BuildConfig.THE_MOVIE_DB_API_KEY;
+
     private RecyclerView.LayoutManager mLayoutManager;
 
     private PosterAdapter mPosterAdapter;
 
-    private int sortingType = TheMovieDBApi.SORTING_BY_POPULARITY;
+    private String sortingType = SORTING_BY_POPULARITY;
     private FloatingActionsMenu mFamPoster;
     private FloatingActionButton mFabSorting;
     private FloatingActionButton mFabFavorite;
@@ -91,36 +95,38 @@ public class PosterFragment extends Fragment {
     }
 
 
-    private void updatePosters(int sortingType, int pageNum) {
-        MovieListTask task = new MovieListTask(getContext(),
-                new AsyncResponse<AsyncResult<List<Movie>>>() {
-                    @Override
-                    public void processFinish(AsyncResult<List<Movie>> output) {
-                        if (output.hasError())
-                            Toast.makeText(getContext(), output.getErrorMsg(), Toast.LENGTH_SHORT)
-                                    .show();
-                        else
-                            mPosterAdapter.addMovies(output.getResult());
-                    }
+    private void updatePosters(String sortingType, int pageId) {
+        MovieClient client = MovieService.createService(MovieClient.class);
+        Call<Response> response = client.getMovieList(sortingType, pageId, API_KEY);
+        response.enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(retrofit2.Response<Response> response) {
+                Response resp = response.body();
+                mPosterAdapter.addMovies(resp.getMovies());
+            }
 
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e(LOG_TAG, "getting posters error ", t);
+            }
         });
-        task.execute(sortingType, pageNum);
     }
 
-    private void replacePosters(int sortingType, int pageNum) {
-        MovieListTask task = new MovieListTask(getContext(),
-                new AsyncResponse<AsyncResult<List<Movie>>>() {
-                    @Override
-                    public void processFinish(AsyncResult<List<Movie>> output) {
-                        if (output.hasError())
-                            Toast.makeText(getContext(), output.getErrorMsg(), Toast.LENGTH_SHORT)
-                                    .show();
-                        else
-                            mPosterAdapter.setMovies(output.getResult());
-                    }
+    private void replacePosters(String sortingType, int pageId) {
+        MovieClient client = MovieService.createService(MovieClient.class);
+        Call<Response> response = client.getMovieList(sortingType, pageId, API_KEY);
+        response.enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(retrofit2.Response<Response> response) {
+                Response resp = response.body();
+                mPosterAdapter.setMovies(resp.getMovies());
+            }
 
-                });
-        task.execute(sortingType, pageNum);
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e(LOG_TAG, "getting posters error ", t);
+            }
+        });
     }
 
 
@@ -148,12 +154,12 @@ public class PosterFragment extends Fragment {
                         mFlInterceptor.setClickable(true);
                         mFlInterceptor.setVisibility(View.VISIBLE);
 
-                        if (sortingType == TheMovieDBApi.SORTING_BY_POPULARITY) {
+                        if (sortingType.equals(SORTING_BY_POPULARITY)) {
                             mFabSorting.setTitle(getResources()
                                     .getString(R.string.fab_sort_by_rating));
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
                                     R.drawable.ic_star_rate_white_18dp));
-                        } else if (sortingType == TheMovieDBApi.SORTING_BY_RATING) {
+                        } else if (sortingType.equals(SORTING_BY_RATING)) {
                             mFabSorting.setTitle(getResources()
                                     .getString(R.string.fab_sort_by_popularity));
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
@@ -174,8 +180,8 @@ public class PosterFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // flip
-                sortingType = (sortingType == TheMovieDBApi.SORTING_BY_POPULARITY ?
-                        TheMovieDBApi.SORTING_BY_RATING : TheMovieDBApi.SORTING_BY_POPULARITY);
+                sortingType = (sortingType.equals(SORTING_BY_POPULARITY) ?
+                                SORTING_BY_RATING : SORTING_BY_POPULARITY);
 
                 // replace posters according to new sorting
                 replacePosters(sortingType, 1);
