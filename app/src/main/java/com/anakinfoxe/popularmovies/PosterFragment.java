@@ -45,6 +45,8 @@ public class PosterFragment extends Fragment {
     private FloatingActionButton mFabFavorite;
     private FrameLayout mFlInterceptor;
 
+    private static final MovieClient CLIENT = MovieService.createService(MovieClient.class);
+
     public PosterFragment() {
 
     }
@@ -96,8 +98,7 @@ public class PosterFragment extends Fragment {
 
 
     private void updatePosters(String sortingType, int pageId) {
-        MovieClient client = MovieService.createService(MovieClient.class);
-        Call<Response> response = client.getMovieList(sortingType, pageId, API_KEY);
+        Call<Response> response = CLIENT.getMovieList(sortingType, pageId, API_KEY);
         response.enqueue(new Callback<Response>() {
             @Override
             public void onResponse(retrofit2.Response<Response> response) {
@@ -113,8 +114,7 @@ public class PosterFragment extends Fragment {
     }
 
     private void replacePosters(String sortingType, int pageId) {
-        MovieClient client = MovieService.createService(MovieClient.class);
-        Call<Response> response = client.getMovieList(sortingType, pageId, API_KEY);
+        Call<Response> response = CLIENT.getMovieList(sortingType, pageId, API_KEY);
         response.enqueue(new Callback<Response>() {
             @Override
             public void onResponse(retrofit2.Response<Response> response) {
