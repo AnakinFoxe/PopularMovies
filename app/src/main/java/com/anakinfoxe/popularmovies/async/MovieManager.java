@@ -16,9 +16,9 @@ import retrofit2.http.Query;
 /**
  * Created by xing on 2/1/16.
  */
-public class MovieService {
+public class MovieManager {
 
-    public interface MovieClient {
+    public interface MovieService {
 
         @GET("{sortingType}?api_key=" + API_KEY)
         Call<Response> getMovieList(
@@ -51,10 +51,10 @@ public class MovieService {
                                 .addConverterFactory(GsonConverterFactory.create(GSON))
                                 .build();
 
-    private static final MovieClient MOVIE_CLIENT = RETROFIT.create(MovieClient.class);
+    private static final MovieService MOVIE_CLIENT = RETROFIT.create(MovieService.class);
 
 
-    public static MovieClient getService() {
+    public static MovieService getService() {
         return MOVIE_CLIENT;
     }
 }
