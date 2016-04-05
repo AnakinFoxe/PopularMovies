@@ -51,6 +51,10 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
         }
     }
 
+    public List<Movie> getMovies() {
+        return this.mMovies;
+    }
+
     public void setMovies(List<Movie> movies) {
         this.mMovies = movies;
 

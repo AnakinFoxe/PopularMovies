@@ -2,6 +2,7 @@ package com.anakinfoxe.popularmovies;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,9 +17,13 @@ import android.widget.Toast;
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
 import com.anakinfoxe.popularmovies.async.MovieManager;
 import com.anakinfoxe.popularmovies.listener.InfiniteScrollListener;
+import com.anakinfoxe.popularmovies.model.Movie;
 import com.anakinfoxe.popularmovies.model.Response;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +34,8 @@ import retrofit2.Callback;
 public class PosterFragment extends Fragment {
 
     private static final String LOG_TAG = PosterFragment.class.getSimpleName();
+
+    private static final String SAVED_MOVIES = "saved_movies";
 
 
     private RecyclerView.LayoutManager mLayoutManager;
@@ -73,8 +80,12 @@ public class PosterFragment extends Fragment {
         // set recycler view adapter
         rv.setAdapter(mPosterAdapter);
 
-        // init date
-        replacePosters(sortingType, 1);
+        // init posters
+        if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_MOVIES)) {
+            List<Movie> savedMovies = savedInstanceState.getParcelableArrayList(SAVED_MOVIES);
+            mPosterAdapter.setMovies(savedMovies);
+        } else
+            replacePosters(sortingType, 1);
 
         // set OnScrollListener to load more data
         rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 2) {
@@ -90,6 +101,17 @@ public class PosterFragment extends Fragment {
         return rv;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mPosterAdapter != null) {
+            List<Movie> movies2Save = mPosterAdapter.getMovies();
+
+            if (movies2Save != null)
+                outState.putParcelableArrayList(SAVED_MOVIES,
+                        (ArrayList<? extends Parcelable>) movies2Save);
+        }
+        super.onSaveInstanceState(outState);
+    }
 
     private void updatePosters(String sortingType, int pageId) {
         Call<Response> response = MovieManager.getService()
