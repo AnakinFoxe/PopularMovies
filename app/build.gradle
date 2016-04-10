@@ -20,6 +20,9 @@ android {
     buildTypes.each {
         it.buildConfigField 'String', 'THE_MOVIE_DB_API_KEY', MyTMDBApiKey
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 repositories {
@@ -33,6 +36,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:cardview-v7:23.3.0'
     compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.facebook.fresco:fresco:0.9.0'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'

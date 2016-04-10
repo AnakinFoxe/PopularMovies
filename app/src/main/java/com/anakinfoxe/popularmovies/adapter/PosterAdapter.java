@@ -17,6 +17,9 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by xing on 1/18/16.
  */
@@ -38,12 +41,12 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
     // view holder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final SimpleDraweeView mDrawee;
+        @Bind(R.id.drawee_poster) SimpleDraweeView mDrawee;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mDrawee = (SimpleDraweeView) itemView.findViewById(R.id.drawee_poster);
+            ButterKnife.bind(this, itemView);
         }
 
         public SimpleDraweeView getDrawee() {

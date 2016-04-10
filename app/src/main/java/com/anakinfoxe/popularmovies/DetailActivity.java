@@ -11,9 +11,12 @@ import android.view.WindowManager;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class DetailActivity extends AppCompatActivity {
 
-    private SimpleDraweeView mBackdropView;
+    @Bind(R.id.drawee_backdrop) SimpleDraweeView mBackdropView;
 
     private Movie mMovie = null;
 
@@ -22,7 +25,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_activity);
 
-        mBackdropView = ((SimpleDraweeView) findViewById(R.id.drawee_backdrop));
+        ButterKnife.bind(this);
 
         // get movie object
         Intent intent = getIntent();

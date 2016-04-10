@@ -28,6 +28,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,6 +48,12 @@ public class DetailFragment extends Fragment {
     private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", new Locale("en"));
     private DecimalFormat df = new DecimalFormat("#.#");
 
+    @Bind(R.id.drawee_poster) SimpleDraweeView mPosterView;
+    @Bind(R.id.textview_title) TextView mTitleView;
+    @Bind(R.id.textview_overview) TextView mOverviewView;
+    @Bind(R.id.textview_released_date) TextView mRelDateView;
+    @Bind(R.id.textview_vote_average) TextView mVoteAvgView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +68,7 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.detail_fragment, container, false);
 
+        ButterKnife.bind(this, rootView);
 
         // obtain movie object
         Bundle args = getArguments();
@@ -94,20 +103,10 @@ public class DetailFragment extends Fragment {
 
 
     private void showMoviePrimaryInfo(View rootView, Movie movie) {
-//        ((SimpleDraweeView) rootView.findViewById(R.id.drawee_backdrop))
-//                .setImageURI(movie.getBackdropPath());
-
-        ((SimpleDraweeView) rootView.findViewById(R.id.drawee_poster))
-                .setImageURI(movie.getPosterPath());
-
-        ((TextView) rootView.findViewById(R.id.textview_title))
-                .setText(movie.getTitle().toUpperCase());
-
-        ((TextView) rootView.findViewById(R.id.textview_overview))
-                .setText(movie.getOverview());
-
-        ((TextView) rootView.findViewById(R.id.textview_released_date))
-                .setText(sdf.format(movie.getReleaseDate()));
+        mPosterView.setImageURI(movie.getPosterPath());
+        mTitleView.setText(movie.getTitle().toUpperCase());
+        mOverviewView.setText(movie.getOverview());
+        mRelDateView.setText(sdf.format(movie.getReleaseDate()));
 
         // show different size of text
         String text = df.format(movie.getVoteAverage()) + "/10";
@@ -116,8 +115,7 @@ public class DetailFragment extends Fragment {
         ss.setSpan(new AbsoluteSizeSpan(textSize),
                 0, text.length() - 3, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
-        ((TextView) rootView.findViewById(R.id.textview_vote_average))
-                .setText(ss);
+        mVoteAvgView.setText(ss);
     }
 
 
