@@ -18,12 +18,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.anakinfoxe.popularmovies.model.Movie;
+import com.anakinfoxe.popularmovies.model.response.ReviewResponse;
+import com.anakinfoxe.popularmovies.model.response.VideoResponse;
+import com.anakinfoxe.popularmovies.service.ServiceManager;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by xing on 1/18/16.
@@ -34,7 +41,7 @@ public class DetailFragment extends Fragment {
 
     public static final String MOVIE_OBJECT = "movieObject";
 
-    private Movie mMovie;
+    private Movie mMovie = null;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", new Locale("en"));
     private DecimalFormat df = new DecimalFormat("#.#");
@@ -53,11 +60,17 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.detail_fragment, container, false);
 
+        // obtain movie object
         Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(MOVIE_OBJECT)) {
+        if (intent != null && intent.hasExtra(MOVIE_OBJECT))
             mMovie = intent.getExtras().getParcelable(MOVIE_OBJECT);
 
+        // set data to view
+        if (mMovie != null) {
             showMoviePrimaryInfo(rootView, mMovie);
+
+            fetchVideos(mMovie.getId());
+            fetchReviews(mMovie.getId());
         }
 
         return rootView;
@@ -123,5 +136,39 @@ public class DetailFragment extends Fragment {
         shareIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
 
         return shareIntent;
+    }
+
+    private void fetchVideos(long id) {
+        Call<VideoResponse> response = ServiceManager.getDetailService()
+                                        .getMovieVideos(id);
+        response.enqueue(new Callback<VideoResponse>() {
+            @Override
+            public void onResponse(Response<VideoResponse> response) {
+                VideoResponse resp = response.body();
+                Log.d(LOG_TAG, "fetched videos: " + resp.getVideos().size());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e(LOG_TAG, "getting videos error ", t);
+            }
+        });
+    }
+
+    private void fetchReviews(long id) {
+        Call<ReviewResponse> response = ServiceManager.getDetailService()
+                .getMovieReviews(id);
+        response.enqueue(new Callback<ReviewResponse>() {
+            @Override
+            public void onResponse(Response<ReviewResponse> response) {
+                ReviewResponse resp = response.body();
+                Log.d(LOG_TAG, "fetched reviews: " + resp.getReviews().size());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e(LOG_TAG, "getting reviews error ", t);
+            }
+        });
     }
 }

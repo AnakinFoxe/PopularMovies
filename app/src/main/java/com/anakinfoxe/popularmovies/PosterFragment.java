@@ -15,10 +15,10 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
-import com.anakinfoxe.popularmovies.async.MovieManager;
+import com.anakinfoxe.popularmovies.service.ServiceManager;
 import com.anakinfoxe.popularmovies.listener.InfiniteScrollListener;
 import com.anakinfoxe.popularmovies.model.Movie;
-import com.anakinfoxe.popularmovies.model.Response;
+import com.anakinfoxe.popularmovies.model.response.MovieResponse;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
@@ -42,7 +42,7 @@ public class PosterFragment extends Fragment {
 
     private PosterAdapter mPosterAdapter;
 
-    private String sortingType = MovieManager.SORTING_BY_POPULARITY;
+    private String sortingType = ServiceManager.SORTING_BY_POPULARITY;
     private FloatingActionsMenu mFamPoster;
     private FloatingActionButton mFabSorting;
     private FloatingActionButton mFabFavorite;
@@ -114,12 +114,12 @@ public class PosterFragment extends Fragment {
     }
 
     private void updatePosters(String sortingType, int pageId) {
-        Call<Response> response = MovieManager.getService()
+        Call<MovieResponse> response = ServiceManager.getMovieService()
                                         .getMovieList(sortingType, pageId);
-        response.enqueue(new Callback<Response>() {
+        response.enqueue(new Callback<MovieResponse>() {
             @Override
-            public void onResponse(retrofit2.Response<Response> response) {
-                Response resp = response.body();
+            public void onResponse(retrofit2.Response<MovieResponse> response) {
+                MovieResponse resp = response.body();
                 mPosterAdapter.addMovies(resp.getMovies());
             }
 
@@ -131,12 +131,12 @@ public class PosterFragment extends Fragment {
     }
 
     private void replacePosters(String sortingType, int pageId) {
-        Call<Response> response = MovieManager.getService()
+        Call<MovieResponse> response = ServiceManager.getMovieService()
                                         .getMovieList(sortingType, pageId);
-        response.enqueue(new Callback<Response>() {
+        response.enqueue(new Callback<MovieResponse>() {
             @Override
-            public void onResponse(retrofit2.Response<Response> response) {
-                Response resp = response.body();
+            public void onResponse(retrofit2.Response<MovieResponse> response) {
+                MovieResponse resp = response.body();
                 mPosterAdapter.setMovies(resp.getMovies());
             }
 
@@ -172,12 +172,12 @@ public class PosterFragment extends Fragment {
                         mFlInterceptor.setClickable(true);
                         mFlInterceptor.setVisibility(View.VISIBLE);
 
-                        if (sortingType.equals(MovieManager.SORTING_BY_POPULARITY)) {
+                        if (sortingType.equals(ServiceManager.SORTING_BY_POPULARITY)) {
                             mFabSorting.setTitle(getResources()
                                     .getString(R.string.fab_sort_by_rating));
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
                                     R.drawable.ic_star_rate_white_18dp));
-                        } else if (sortingType.equals(MovieManager.SORTING_BY_RATING)) {
+                        } else if (sortingType.equals(ServiceManager.SORTING_BY_RATING)) {
                             mFabSorting.setTitle(getResources()
                                     .getString(R.string.fab_sort_by_popularity));
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
@@ -198,8 +198,8 @@ public class PosterFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // flip
-                sortingType = (sortingType.equals(MovieManager.SORTING_BY_POPULARITY) ?
-                        MovieManager.SORTING_BY_RATING : MovieManager.SORTING_BY_POPULARITY);
+                sortingType = (sortingType.equals(ServiceManager.SORTING_BY_POPULARITY) ?
+                        ServiceManager.SORTING_BY_RATING : ServiceManager.SORTING_BY_POPULARITY);
 
                 // replace posters according to new sorting
                 replacePosters(sortingType, 1);

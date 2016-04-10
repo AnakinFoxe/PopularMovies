@@ -1,4 +1,4 @@
-package com.anakinfoxe.popularmovies.async;
+package com.anakinfoxe.popularmovies.service;
 
 import android.net.Uri;
 import android.util.Log;

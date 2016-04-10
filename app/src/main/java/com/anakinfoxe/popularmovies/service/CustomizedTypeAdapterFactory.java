@@ -1,4 +1,4 @@
-package com.anakinfoxe.popularmovies.async;
+package com.anakinfoxe.popularmovies.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

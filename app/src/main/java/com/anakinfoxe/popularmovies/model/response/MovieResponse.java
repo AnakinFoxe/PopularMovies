@@ -1,5 +1,6 @@
-package com.anakinfoxe.popularmovies.model;
+package com.anakinfoxe.popularmovies.model.response;
 
+import com.anakinfoxe.popularmovies.model.Movie;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +9,7 @@ import java.util.List;
 /**
  * Created by xing on 2/2/16.
  */
-public class Response {
+public class MovieResponse {
 
     @SerializedName("page")
     @Expose
@@ -26,7 +27,7 @@ public class Response {
     @Expose
     private long totalPages;
 
-    public Response() {
+    public MovieResponse() {
     }
 
     public long getPage() {
