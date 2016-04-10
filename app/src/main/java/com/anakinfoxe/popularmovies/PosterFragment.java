@@ -62,7 +62,7 @@ public class PosterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate recycler view
         RecyclerView rv = (RecyclerView) inflater
-                .inflate(R.layout.poster_fragment, container, false);
+                .inflate(R.layout.fragment_poster, container, false);
 
         // instantiate layout manager
         if (getActivity().getResources().getConfiguration().orientation

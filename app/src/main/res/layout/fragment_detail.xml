@@ -14,7 +14,9 @@
         xmlns:fresco="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:showDividers="middle|end"
+        android:divider="@drawable/divider_drawable">
 
         <com.facebook.drawee.view.SimpleDraweeView
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -34,8 +36,7 @@
             android:paddingBottom="@dimen/detail_page_vertical_margin"
             android:paddingLeft="@dimen/detail_page_horizontal_margin"
             android:paddingRight="@dimen/detail_page_horizontal_margin"
-            android:paddingTop="@dimen/detail_page_vertical_margin"
-            >
+            android:paddingTop="@dimen/detail_page_vertical_margin">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -95,6 +96,31 @@
                 android:textColor="@color/primaryText"
                 android:id="@+id/textview_overview" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This part is for Trailer Videos"
+                android:textColor="@color/colorPrimaryDark"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This part is for Reviews"
+                android:textColor="@color/colorPrimaryDark"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
