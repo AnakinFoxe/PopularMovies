@@ -58,12 +58,14 @@ public class DetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        View rootView = inflater.inflate(R.layout.detail_fragment, container, false);
+
 
         // obtain movie object
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(MOVIE_OBJECT))
-            mMovie = intent.getExtras().getParcelable(MOVIE_OBJECT);
+        Bundle args = getArguments();
+        if (args != null)
+            mMovie = args.getParcelable(MOVIE_OBJECT);
+
 
         // set data to view
         if (mMovie != null) {
@@ -92,8 +94,8 @@ public class DetailFragment extends Fragment {
 
 
     private void showMoviePrimaryInfo(View rootView, Movie movie) {
-        ((SimpleDraweeView) rootView.findViewById(R.id.drawee_backdrop))
-                .setImageURI(movie.getBackdropPath());
+//        ((SimpleDraweeView) rootView.findViewById(R.id.drawee_backdrop))
+//                .setImageURI(movie.getBackdropPath());
 
         ((SimpleDraweeView) rootView.findViewById(R.id.drawee_poster))
                 .setImageURI(movie.getPosterPath());

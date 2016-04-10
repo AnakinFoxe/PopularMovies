@@ -31,9 +31,9 @@ import retrofit2.Callback;
 /**
  * Created by xing on 1/18/16.
  */
-public class PosterFragment extends Fragment {
+public class MainFragment extends Fragment {
 
-    private static final String LOG_TAG = PosterFragment.class.getSimpleName();
+    private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
     private static final String SAVED_MOVIES = "saved_movies";
 
@@ -48,7 +48,7 @@ public class PosterFragment extends Fragment {
     private FloatingActionButton mFabFavorite;
     private FrameLayout mFlInterceptor;
 
-    public PosterFragment() {
+    public MainFragment() {
 
     }
 
@@ -62,7 +62,7 @@ public class PosterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate recycler view
         RecyclerView rv = (RecyclerView) inflater
-                .inflate(R.layout.fragment_poster, container, false);
+                .inflate(R.layout.main_fragment, container, false);
 
         // instantiate layout manager
         if (getActivity().getResources().getConfiguration().orientation

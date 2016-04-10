@@ -6,11 +6,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
     </style>
 
     <!-- full screen display -->
-    <style name="FullScreenActivityTheme" parent="Theme.AppCompat.Light.NoActionBar" />
+    <style name="FullScreenActivityTheme" parent="Theme.AppCompat.NoActionBar" />
 
     <!-- Floating Action Menu -->
     <style name="primaryFAB">

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:showDividers="middle|end"
+    android:divider="@drawable/divider_drawable">
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/detail_page_vertical_margin"
+        android:paddingLeft="@dimen/detail_page_horizontal_margin"
+        android:paddingRight="@dimen/detail_page_horizontal_margin"
+        android:paddingTop="@dimen/detail_page_vertical_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/detail_page_vertical_margin"
+            android:textSize="@dimen/title_text_size"
+            android:textColor="@color/primaryText"
+            android:id="@+id/textview_title"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/detail_page_vertical_margin">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/drawee_poster"
+                android:layout_alignParentTop="true"
+                android:layout_width="@dimen/poster_width_in_detail"
+                android:layout_height="wrap_content"
+                fresco:viewAspectRatio="0.66667"
+                style="@style/primaryImage"
+                fresco:placeholderImage="@drawable/placeholder_poster"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/drawee_poster"
+                android:layout_toRightOf="@+id/drawee_poster"
+                android:paddingLeft="@dimen/detail_page_horizontal_margin"
+                android:paddingRight="@dimen/detail_page_horizontal_margin"
+                android:textSize="@dimen/released_date_text_size"
+                android:textColor="@color/primaryText"
+                android:id="@+id/textview_released_date"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textview_released_date"
+                android:layout_toEndOf="@+id/drawee_poster"
+                android:layout_toRightOf="@+id/drawee_poster"
+                android:paddingLeft="@dimen/detail_page_horizontal_margin"
+                android:paddingRight="@dimen/detail_page_horizontal_margin"
+                android:textSize="@dimen/overview_text_size"
+                android:textColor="@color/primaryText"
+                android:id="@+id/textview_vote_average"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/overview_text_size"
+            android:textColor="@color/primaryText"
+            android:id="@+id/textview_overview" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This part is for Trailer Videos"
+            android:textColor="@color/colorPrimaryDark"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This part is for Reviews"
+            android:textColor="@color/colorPrimaryDark"/>
+    </LinearLayout>
+</LinearLayout>
