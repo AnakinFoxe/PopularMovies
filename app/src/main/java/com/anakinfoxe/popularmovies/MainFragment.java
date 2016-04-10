@@ -15,16 +15,18 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
-import com.anakinfoxe.popularmovies.service.ServiceManager;
 import com.anakinfoxe.popularmovies.listener.InfiniteScrollListener;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.anakinfoxe.popularmovies.model.response.MovieResponse;
+import com.anakinfoxe.popularmovies.service.ServiceManager;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -37,16 +39,15 @@ public class MainFragment extends Fragment {
 
     private static final String SAVED_MOVIES = "saved_movies";
 
-
-    private RecyclerView.LayoutManager mLayoutManager;
-
     private PosterAdapter mPosterAdapter;
 
     private String sortingType = ServiceManager.SORTING_BY_POPULARITY;
-    private FloatingActionsMenu mFamPoster;
-    private FloatingActionButton mFabSorting;
-    private FloatingActionButton mFabFavorite;
-    private FrameLayout mFlInterceptor;
+
+    @Bind(R.id.fam_poster) FloatingActionsMenu mFamPoster;
+    @Bind(R.id.fab_sorting) FloatingActionButton mFabSorting;
+    @Bind(R.id.fab_favorite) FloatingActionButton mFabFavorite;
+    @Bind(R.id.fl_interceptor) FrameLayout mFlInterceptor;
+    @Bind(R.id.recyclerview_poster) RecyclerView mRv;
 
     public MainFragment() {
 
@@ -61,24 +62,26 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate recycler view
-        RecyclerView rv = (RecyclerView) inflater
-                .inflate(R.layout.main_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.main_fragment, container, false);
+
+        ButterKnife.bind(this, rootView);
 
         // instantiate layout manager
+        RecyclerView.LayoutManager mLayoutManager;
         if (getActivity().getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_PORTRAIT)
-            mLayoutManager = new GridLayoutManager(rv.getContext(), 2);
+            mLayoutManager = new GridLayoutManager(mRv.getContext(), 2);
         else
-            mLayoutManager = new GridLayoutManager(rv.getContext(), 3);
+            mLayoutManager = new GridLayoutManager(mRv.getContext(), 3);
 
         // set layout manager
-        rv.setLayoutManager(mLayoutManager);
+        mRv.setLayoutManager(mLayoutManager);
 
         // instantiate poster adapter
         mPosterAdapter = new PosterAdapter(getActivity());
 
         // set recycler view adapter
-        rv.setAdapter(mPosterAdapter);
+        mRv.setAdapter(mPosterAdapter);
 
         // init posters
         if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_MOVIES)) {
@@ -88,7 +91,7 @@ public class MainFragment extends Fragment {
             replacePosters(sortingType, 1);
 
         // set OnScrollListener to load more data
-        rv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 2) {
+        mRv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 2) {
             @Override
             public void onLoadMore(int page, int totalItemCount) {
                 updatePosters(sortingType, page);
@@ -96,9 +99,9 @@ public class MainFragment extends Fragment {
         });
 
         // setup floating action buttons
-        setupFab();
+        setupFab(rootView);
 
-        return rv;
+        return rootView;
     }
 
     @Override
@@ -149,11 +152,11 @@ public class MainFragment extends Fragment {
 
 
 
-    private void setupFab() {
-        mFamPoster = (FloatingActionsMenu) getActivity().findViewById(R.id.fam_poster);
-        mFabSorting = (FloatingActionButton) getActivity().findViewById(R.id.fab_sorting);
-        mFabFavorite = (FloatingActionButton) getActivity().findViewById(R.id.fab_favorite);
-        mFlInterceptor = (FrameLayout) getActivity().findViewById(R.id.fl_interceptor);
+    private void setupFab(View rootView) {
+//        mFamPoster = (FloatingActionsMenu) rootView.findViewById(R.id.fam_poster);
+//        mFabSorting = (FloatingActionButton) rootView.findViewById(R.id.fab_sorting);
+//        mFabFavorite = (FloatingActionButton) rootView.findViewById(R.id.fab_favorite);
+//        mFlInterceptor = (FrameLayout) rootView.findViewById(R.id.fl_interceptor);
 
         // interceptor will intercept the click event when fam is expanded
         mFlInterceptor.setOnClickListener(new View.OnClickListener() {
