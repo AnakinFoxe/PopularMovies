@@ -1,6 +1,7 @@
 package com.anakinfoxe.popularmovies;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -22,14 +23,18 @@ import android.widget.TextView;
 import com.anakinfoxe.popularmovies.adapter.ReviewAdapter;
 import com.anakinfoxe.popularmovies.adapter.VideoAdapter;
 import com.anakinfoxe.popularmovies.model.Movie;
+import com.anakinfoxe.popularmovies.model.Review;
+import com.anakinfoxe.popularmovies.model.Video;
 import com.anakinfoxe.popularmovies.model.response.ReviewResponse;
 import com.anakinfoxe.popularmovies.model.response.VideoResponse;
 import com.anakinfoxe.popularmovies.service.ServiceManager;
+import com.anakinfoxe.popularmovies.util.Helper;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
@@ -54,6 +59,8 @@ public class DetailFragment extends Fragment {
 
     private VideoAdapter mVideoAdapter;
     private ReviewAdapter mReviewAdapter;
+
+    private ShareActionProvider mShareAP;
 
     @Bind(R.id.drawee_poster) SimpleDraweeView mPosterView;
     @Bind(R.id.textview_title) TextView mTitleView;
@@ -88,7 +95,7 @@ public class DetailFragment extends Fragment {
         RecyclerView.LayoutManager lmVideos = new LinearLayoutManager(mRvVideos.getContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         mRvVideos.setLayoutManager(lmVideos);
-        mVideoAdapter = new VideoAdapter();
+        mVideoAdapter = new VideoAdapter(mRvReviews.getContext());
         mRvVideos.setAdapter(mVideoAdapter);
 
         // set layout manager and adapter for reviews recycler view
@@ -100,7 +107,7 @@ public class DetailFragment extends Fragment {
 
         // set data to view
         if (mMovie != null) {
-            showMoviePrimaryInfo(rootView, mMovie);
+            showMoviePrimaryInfo(mMovie);
 
             fetchVideos(mMovie.getId());
             fetchReviews(mMovie.getId());
@@ -114,17 +121,12 @@ public class DetailFragment extends Fragment {
         inflater.inflate(R.menu.menu_detail, menu);
 
         MenuItem share = menu.findItem(R.id.action_share);
-        ShareActionProvider shareAP =
-                (ShareActionProvider) MenuItemCompat.getActionProvider(share);
-
-        if (shareAP != null)
-            shareAP.setShareIntent(createShareDetailIntent(mMovie));
-        else
-            Log.d(LOG_TAG, "Share Action Provider is null?");
+        mShareAP = (ShareActionProvider) MenuItemCompat
+                .getActionProvider(share);
     }
 
 
-    private void showMoviePrimaryInfo(View rootView, Movie movie) {
+    private void showMoviePrimaryInfo(Movie movie) {
         mPosterView.setImageURI(movie.getPosterPath());
         mTitleView.setText(movie.getTitle().toUpperCase());
         mOverviewView.setText(movie.getOverview());
@@ -141,23 +143,41 @@ public class DetailFragment extends Fragment {
     }
 
 
-    private Intent createShareDetailIntent(Movie movie) {
-        // compose content text
+    private void createShareDetailIntent(Movie movie, List<Video> videos) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Check out movie: ")
-                .append(movie.getOriginalTitle())
-                .append(" (rating ")
-                .append(df.format(movie.getVoteAverage()))
-                .append(") http://www.themoviedb.org/movie/")
-                .append(movie.getId());
 
-        // send intent
+        // compose content text
+        String title = movie.getTitle();
+        if (videos != null && videos.size() > 0)
+            sb.append("Check out movie trailer: ")
+                    .append(title)
+                    .append(" (rating ")
+                    .append(df.format(movie.getVoteAverage()))
+                    .append(") ")
+                    .append(Helper.getYoutubeVideoUrl(videos.get(0)));
+        else
+            sb.append("Check out movie: ")
+                    .append(title)
+                    .append(" (rating ")
+                    .append(df.format(movie.getVoteAverage()))
+                    .append(") ")
+                    .append(Helper.getTmdbMovieUrl(movie));
+
+
+        // create intent
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        else
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
 
-        return shareIntent;
+        // reset share intent to share action provider
+        if (mShareAP != null)
+            mShareAP.setShareIntent(shareIntent);
+        else
+            Log.d(LOG_TAG, "Share Action Provider is null?");
     }
 
     private void fetchVideos(long id) {
@@ -170,6 +190,8 @@ public class DetailFragment extends Fragment {
                 Log.d(LOG_TAG, "fetched videos: " + resp.getVideos().size());
 
                 mVideoAdapter.setVideos(resp.getVideos());
+
+                createShareDetailIntent(mMovie, resp.getVideos());
             }
 
             @Override

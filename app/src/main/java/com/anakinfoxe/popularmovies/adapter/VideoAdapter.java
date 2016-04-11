@@ -1,5 +1,7 @@
 package com.anakinfoxe.popularmovies.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.anakinfoxe.popularmovies.R;
 import com.anakinfoxe.popularmovies.model.Video;
-import com.anakinfoxe.popularmovies.util.Utility;
+import com.anakinfoxe.popularmovies.util.Helper;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
@@ -26,7 +28,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder>{
 
     private List<Video> mVideos = new ArrayList<>();
 
+    private Context mContext;
 
+    public VideoAdapter(Context c) {
+        this.mContext = c;
+
+        this.mVideos.clear();
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -62,19 +70,21 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        loadImage2View(position, holder.getDrawee());
+        if (position >= mVideos.size())
+            return;
 
-        final Video video = (position < mVideos.size()) ?
-                mVideos.get(position) : null;
+        final Video video = mVideos.get(position);
+
+        loadImage2View(video, holder.getDrawee());
 
         holder.getDrawee().setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // send intent to start YouTube app
-                if (video != null) {
-
-                }
+                Uri uri = Uri.parse(Helper.getYoutubeVideoUrl(video));
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                mContext.startActivity(intent);
             }
         });
     }
@@ -84,15 +94,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder>{
         return mVideos.size();
     }
 
-    private void loadImage2View(int position, SimpleDraweeView drawee) {
-        if (position >= mVideos.size())
-            return;
-
-        Uri uri = getYouTubeThumbnail(mVideos.get(position).getKey());
+    private void loadImage2View(Video video, SimpleDraweeView drawee) {
+        Uri uri = Uri.parse(Helper.getYoutubeThumbnailUrl(video));
         drawee.setImageURI(uri);
-    }
-
-    private Uri getYouTubeThumbnail(String key) {
-        return Uri.parse("http://img.youtube.com/vi/" + key + "/0.jpg");
     }
 }

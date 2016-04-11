@@ -5,6 +5,7 @@ import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -16,6 +17,7 @@ import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
+    @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.drawee_backdrop) SimpleDraweeView mBackdropView;
 
     private Movie mMovie = null;
@@ -26,6 +28,9 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.detail_activity);
 
         ButterKnife.bind(this);
+
+        // bind actionbar to the toolbar with collapsing toolbar
+        setSupportActionBar(mToolbar);
 
         // get movie object
         Intent intent = getIntent();
