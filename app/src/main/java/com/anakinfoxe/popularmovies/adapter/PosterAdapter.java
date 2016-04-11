@@ -41,7 +41,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
     // view holder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.drawee_poster) SimpleDraweeView mDrawee;
+        @Bind(R.id.drawee_poster) SimpleDraweeView drawee;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -50,7 +50,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
         }
 
         public SimpleDraweeView getDrawee() {
-            return this.mDrawee;
+            return this.drawee;
         }
     }
 
@@ -80,16 +80,16 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(final PosterAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final PosterAdapter.ViewHolder holder, int position) {
         loadImage2View(position, holder.getDrawee());
+
+        final Movie movie = (position < mMovies.size()) ?
+                mMovies.get(position) : null;
 
         holder.getDrawee().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (position >= mMovies.size())
-                    return;
-
-                Movie movie = mMovies.get(position);
+                // send intent to start DetailActivity
                 if (movie != null) {
                     Intent intent = new Intent(mContext, DetailActivity.class);
 

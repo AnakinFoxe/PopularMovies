@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -17,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.anakinfoxe.popularmovies.adapter.ReviewAdapter;
+import com.anakinfoxe.popularmovies.adapter.VideoAdapter;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.anakinfoxe.popularmovies.model.response.ReviewResponse;
 import com.anakinfoxe.popularmovies.model.response.VideoResponse;
@@ -48,11 +52,16 @@ public class DetailFragment extends Fragment {
     private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", new Locale("en"));
     private DecimalFormat df = new DecimalFormat("#.#");
 
+    private VideoAdapter mVideoAdapter;
+    private ReviewAdapter mReviewAdapter;
+
     @Bind(R.id.drawee_poster) SimpleDraweeView mPosterView;
     @Bind(R.id.textview_title) TextView mTitleView;
     @Bind(R.id.textview_overview) TextView mOverviewView;
     @Bind(R.id.textview_released_date) TextView mRelDateView;
     @Bind(R.id.textview_vote_average) TextView mVoteAvgView;
+    @Bind(R.id.recyclerview_videos) RecyclerView mRvVideos;
+    @Bind(R.id.recyclerview_reviews) RecyclerView mRvReviews;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +84,19 @@ public class DetailFragment extends Fragment {
         if (args != null)
             mMovie = args.getParcelable(MOVIE_OBJECT);
 
+        // set layout manager and adapter for videos recycler view
+        RecyclerView.LayoutManager lmVideos = new LinearLayoutManager(mRvVideos.getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        mRvVideos.setLayoutManager(lmVideos);
+        mVideoAdapter = new VideoAdapter();
+        mRvVideos.setAdapter(mVideoAdapter);
+
+        // set layout manager and adapter for reviews recycler view
+        RecyclerView.LayoutManager lmReviews = new LinearLayoutManager(mRvReviews.getContext(),
+                LinearLayoutManager.VERTICAL, false);
+        mRvReviews.setLayoutManager(lmReviews);
+        mReviewAdapter = new ReviewAdapter();
+        mRvReviews.setAdapter(mReviewAdapter);
 
         // set data to view
         if (mMovie != null) {
@@ -146,6 +168,8 @@ public class DetailFragment extends Fragment {
             public void onResponse(Response<VideoResponse> response) {
                 VideoResponse resp = response.body();
                 Log.d(LOG_TAG, "fetched videos: " + resp.getVideos().size());
+
+                mVideoAdapter.setVideos(resp.getVideos());
             }
 
             @Override
@@ -163,6 +187,8 @@ public class DetailFragment extends Fragment {
             public void onResponse(Response<ReviewResponse> response) {
                 ReviewResponse resp = response.body();
                 Log.d(LOG_TAG, "fetched reviews: " + resp.getReviews().size());
+
+                mReviewAdapter.setReviews(resp.getReviews());
             }
 
             @Override

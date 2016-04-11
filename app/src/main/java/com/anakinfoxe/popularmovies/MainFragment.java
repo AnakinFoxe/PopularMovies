@@ -47,7 +47,7 @@ public class MainFragment extends Fragment {
     @Bind(R.id.fab_sorting) FloatingActionButton mFabSorting;
     @Bind(R.id.fab_favorite) FloatingActionButton mFabFavorite;
     @Bind(R.id.fl_interceptor) FrameLayout mFlInterceptor;
-    @Bind(R.id.recyclerview_poster) RecyclerView mRv;
+    @Bind(R.id.recyclerview_poster) RecyclerView mRvPosters;
 
     public MainFragment() {
 
@@ -67,21 +67,21 @@ public class MainFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         // instantiate layout manager
-        RecyclerView.LayoutManager mLayoutManager;
+        RecyclerView.LayoutManager layoutManager;
         if (getActivity().getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_PORTRAIT)
-            mLayoutManager = new GridLayoutManager(mRv.getContext(), 2);
+            layoutManager = new GridLayoutManager(mRvPosters.getContext(), 2);
         else
-            mLayoutManager = new GridLayoutManager(mRv.getContext(), 3);
+            layoutManager = new GridLayoutManager(mRvPosters.getContext(), 3);
 
         // set layout manager
-        mRv.setLayoutManager(mLayoutManager);
+        mRvPosters.setLayoutManager(layoutManager);
 
         // instantiate poster adapter
         mPosterAdapter = new PosterAdapter(getActivity());
 
         // set recycler view adapter
-        mRv.setAdapter(mPosterAdapter);
+        mRvPosters.setAdapter(mPosterAdapter);
 
         // init posters
         if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_MOVIES)) {
@@ -91,7 +91,7 @@ public class MainFragment extends Fragment {
             replacePosters(sortingType, 1);
 
         // set OnScrollListener to load more data
-        mRv.addOnScrollListener(new InfiniteScrollListener(mLayoutManager, 2) {
+        mRvPosters.addOnScrollListener(new InfiniteScrollListener(layoutManager, 2) {
             @Override
             public void onLoadMore(int page, int totalItemCount) {
                 updatePosters(sortingType, page);

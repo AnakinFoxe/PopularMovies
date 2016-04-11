@@ -1,0 +1,14 @@
+<com.facebook.drawee.view.SimpleDraweeView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawee_video"
+    android:layout_width="240dp"
+    android:layout_height="wrap_content"
+    style="@style/primaryImage"
+    fresco:viewAspectRatio="1.77778"
+    fresco:placeholderImage="@drawable/placeholder_poster"
+    fresco:overlayImage="@drawable/play_arrow"
+    fresco:pressedStateOverlayImage="@color/greyPressed"
+    tools:context="adapter.VideoAdapter"
+    />

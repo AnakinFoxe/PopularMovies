@@ -30,5 +30,12 @@
         <item name="android:padding">@dimen/image_no_padding_margin</item>
     </style>
 
+    <!-- margin for movie details -->
+    <style name="detailMargin">
+        <item name="android:paddingBottom">@dimen/detail_page_vertical_margin</item>
+        <item name="android:paddingLeft">@dimen/detail_page_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/detail_page_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/detail_page_vertical_margin</item>
+    </style>
 
 </resources>
