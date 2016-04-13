@@ -116,6 +116,12 @@ public class MainFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    public void setmTwoPane(boolean mTwoPane) {
+        if (mPosterAdapter != null)
+            mPosterAdapter.setmTwoPane(mTwoPane);
+    }
+
+
     private void updatePosters(String sortingType, int pageId) {
         Call<MovieResponse> response = ServiceManager.getMovieService()
                                         .getMovieList(sortingType, pageId);

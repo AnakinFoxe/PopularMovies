@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:name="com.anakinfoxe.popularmovies.MainFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container_main"
-    tools:context=".MainActivity">
-</RelativeLayout>
+    tools:context="com.anakinfoxe.popularmovies.MainFragment"
+    tools:layout="@layout/main_fragment"
+    android:id="@+id/fragment_main"/>

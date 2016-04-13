@@ -1,8 +1,10 @@
 package com.anakinfoxe.popularmovies.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.anakinfoxe.popularmovies.DetailActivity;
 import com.anakinfoxe.popularmovies.DetailFragment;
+import com.anakinfoxe.popularmovies.MainActivity;
 import com.anakinfoxe.popularmovies.R;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -29,14 +32,44 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
 
     private List<Movie> mMovies = new ArrayList<>();
 
-    private Context mContext;
+    private Activity mActivity;
 
-    public PosterAdapter(Context c) {
-        this.mContext = c;
+    private boolean mTwoPane = false;
+
+    public PosterAdapter(Activity a) {
+        this.mActivity = a;
 
         this.mMovies.clear();
     }
 
+    public List<Movie> getMovies() {
+        return this.mMovies;
+    }
+
+    public void setMovies(List<Movie> movies) {
+        this.mMovies = movies;
+
+        // set the first one as default
+        if (mTwoPane && movies != null && movies.size() > 0) {
+            ((CallBack) mActivity).onItemSelected(movies.get(0));
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void addMovies(List<Movie> movies) {
+        this.mMovies.addAll(movies);
+
+        notifyDataSetChanged();
+    }
+
+    public void setmTwoPane(boolean mTwoPane) {
+        this.mTwoPane = mTwoPane;
+    }
+
+    public interface CallBack {
+        void onItemSelected(Movie movie);
+    }
 
     // view holder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -52,22 +85,6 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
         public SimpleDraweeView getDrawee() {
             return this.drawee;
         }
-    }
-
-    public List<Movie> getMovies() {
-        return this.mMovies;
-    }
-
-    public void setMovies(List<Movie> movies) {
-        this.mMovies = movies;
-
-        notifyDataSetChanged();
-    }
-
-    public void addMovies(List<Movie> movies) {
-        this.mMovies.addAll(movies);
-
-        notifyDataSetChanged();
     }
 
 
@@ -89,14 +106,10 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
         holder.getDrawee().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // send intent to start DetailActivity
-                if (movie != null) {
-                    Intent intent = new Intent(mContext, DetailActivity.class);
+                // pass the movie obj to main activity
+                if (movie != null)
+                    ((CallBack) mActivity).onItemSelected(movie);
 
-                    intent.putExtra(DetailFragment.MOVIE_OBJECT, movie);
-
-                    mContext.startActivity(intent);
-                }
             }
         });
     }
