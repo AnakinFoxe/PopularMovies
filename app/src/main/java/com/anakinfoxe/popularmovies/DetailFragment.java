@@ -3,6 +3,7 @@ package com.anakinfoxe.popularmovies;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,6 +35,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,9 +52,13 @@ public class DetailFragment extends Fragment {
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
-    public static final String MOVIE_OBJECT = "movieObject";
+    public static final String MOVIE_OBJECT     = "movieObject";
+    private static final String VIDEO_OBJECTS   = "videoObjects";
+    private static final String REVIEW_OBJECTS  = "reviewObjects";
 
     private Movie mMovie = null;
+    private List<Video> mVideos = null;
+    private List<Review> mReviews = null;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", new Locale("en"));
     private DecimalFormat df = new DecimalFormat("#.#");
@@ -86,11 +92,6 @@ public class DetailFragment extends Fragment {
 
         ButterKnife.bind(this, rootView);
 
-        // obtain movie object
-        Bundle args = getArguments();
-        if (args != null)
-            mMovie = args.getParcelable(MOVIE_OBJECT);
-
         // set layout manager and adapter for videos recycler view
         RecyclerView.LayoutManager lmVideos = new LinearLayoutManager(mRvVideos.getContext(),
                 LinearLayoutManager.HORIZONTAL, false);
@@ -105,12 +106,29 @@ public class DetailFragment extends Fragment {
         mReviewAdapter = new ReviewAdapter();
         mRvReviews.setAdapter(mReviewAdapter);
 
+        if (savedInstanceState == null) {
+            // obtain movie object
+            Bundle args = getArguments();
+            if (args != null)
+                mMovie = args.getParcelable(MOVIE_OBJECT);
+        } else
+            mMovie = savedInstanceState.getParcelable(DetailFragment.MOVIE_OBJECT);
+
         // set data to view
         if (mMovie != null) {
             showMoviePrimaryInfo(mMovie);
 
-            fetchVideos(mMovie.getId());
-            fetchReviews(mMovie.getId());
+            if (savedInstanceState == null) {
+                fetchVideos(mMovie.getId());
+                fetchReviews(mMovie.getId());
+            } else {
+                mVideos = savedInstanceState.getParcelableArrayList(VIDEO_OBJECTS);
+                mVideoAdapter.setVideos(mVideos);
+
+                mReviews = savedInstanceState.getParcelableArrayList(REVIEW_OBJECTS);
+                mReviewAdapter.setReviews(mReviews);
+            }
+
         }
 
         return rootView;
@@ -125,6 +143,15 @@ public class DetailFragment extends Fragment {
                 .getActionProvider(share);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(MOVIE_OBJECT, mMovie);
+        outState.putParcelableArrayList(VIDEO_OBJECTS,
+                new ArrayList<Parcelable>(mVideos));
+        outState.putParcelableArrayList(REVIEW_OBJECTS,
+                new ArrayList<Parcelable>(mReviews));
+        super.onSaveInstanceState(outState);
+    }
 
     private void showMoviePrimaryInfo(Movie movie) {
         mPosterView.setImageURI(movie.getPosterPath());
@@ -189,9 +216,11 @@ public class DetailFragment extends Fragment {
                 VideoResponse resp = response.body();
                 Log.d(LOG_TAG, "fetched videos: " + resp.getVideos().size());
 
-                mVideoAdapter.setVideos(resp.getVideos());
+                mVideos = resp.getVideos();
 
-                createShareDetailIntent(mMovie, resp.getVideos());
+                mVideoAdapter.setVideos(mVideos);
+
+                createShareDetailIntent(mMovie, mVideos);
             }
 
             @Override
@@ -210,7 +239,9 @@ public class DetailFragment extends Fragment {
                 ReviewResponse resp = response.body();
                 Log.d(LOG_TAG, "fetched reviews: " + resp.getReviews().size());
 
-                mReviewAdapter.setReviews(resp.getReviews());
+                mReviews = resp.getReviews();
+
+                mReviewAdapter.setReviews(mReviews);
             }
 
             @Override

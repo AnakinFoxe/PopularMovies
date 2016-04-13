@@ -1,12 +1,15 @@
 package com.anakinfoxe.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by xing on 4/8/16.
  */
-public class Review {
+public class Review implements Parcelable {
 
     @SerializedName("id")
     @Expose
@@ -46,5 +49,36 @@ public class Review {
     public void setContent(String content) {
         this.content = content;
     }
+
+
+    public Review(Parcel in) {
+        this.id = in.readString();
+        this.author = in.readString();
+        this.content = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.author);
+        dest.writeString(this.content);
+    }
+
+    public static final Creator<Review> CREATOR = new Creator<Review>() {
+        @Override
+        public Review createFromParcel(Parcel in) {
+            return new Review(in);
+        }
+
+        @Override
+        public Review[] newArray(int size) {
+            return new Review[size];
+        }
+    };
 }
 

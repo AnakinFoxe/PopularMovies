@@ -32,24 +32,35 @@ public class DetailActivity extends AppCompatActivity {
         // bind actionbar to the toolbar with collapsing toolbar
         setSupportActionBar(mToolbar);
 
-        // get movie object
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(DetailFragment.MOVIE_OBJECT))
-            mMovie = intent.getExtras().getParcelable(DetailFragment.MOVIE_OBJECT);
+        if (savedInstanceState == null) {
+            // get movie object from intent
+            Intent intent = getIntent();
+            if (intent != null && intent.hasExtra(DetailFragment.MOVIE_OBJECT))
+                mMovie = intent.getExtras().getParcelable(DetailFragment.MOVIE_OBJECT);
 
-        if (mMovie != null) {
-            // set backdrop
+            if (mMovie != null) {
+                Bundle args = new Bundle();
+                args.putParcelable(DetailFragment.MOVIE_OBJECT, mMovie);
+
+                Fragment fragment = new DetailFragment();
+                fragment.setArguments(args);
+
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.container_detail, fragment)
+                        .commit();
+            }
+        } else
+            mMovie = savedInstanceState.getParcelable(DetailFragment.MOVIE_OBJECT);
+
+        // set backdrop
+        if (mMovie != null)
             mBackdropView.setImageURI(mMovie.getBackdropPath());
+    }
 
-            Bundle args = new Bundle();
-            args.putParcelable(DetailFragment.MOVIE_OBJECT, mMovie);
 
-            Fragment fragment = new DetailFragment();
-            fragment.setArguments(args);
-
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_detail, fragment)
-                    .commit();
-        }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(DetailFragment.MOVIE_OBJECT, mMovie);
+        super.onSaveInstanceState(outState);
     }
 }
