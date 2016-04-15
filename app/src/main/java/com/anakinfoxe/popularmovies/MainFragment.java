@@ -38,10 +38,11 @@ public class MainFragment extends Fragment {
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
     private static final String SAVED_MOVIES = "saved_movies";
+    private static final String CURRENT_SORT = "current_sort";
 
     private PosterAdapter mPosterAdapter;
 
-    private String sortingType = ServiceManager.SORTING_BY_POPULARITY;
+    private String sortingType;
 
     @Bind(R.id.fam_poster) FloatingActionsMenu mFamPoster;
     @Bind(R.id.fab_sorting) FloatingActionButton mFabSorting;
@@ -85,10 +86,15 @@ public class MainFragment extends Fragment {
 
         // init posters
         if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_MOVIES)) {
+            sortingType = savedInstanceState.getString(CURRENT_SORT);
+
             List<Movie> savedMovies = savedInstanceState.getParcelableArrayList(SAVED_MOVIES);
             mPosterAdapter.setMovies(savedMovies);
-        } else
+        } else {
+            sortingType = ServiceManager.SORTING_BY_POPULARITY;
+
             replacePosters(sortingType, 1);
+        }
 
         // set OnScrollListener to load more data
         mRvPosters.addOnScrollListener(new InfiniteScrollListener(layoutManager, 2) {
@@ -113,6 +119,7 @@ public class MainFragment extends Fragment {
                 outState.putParcelableArrayList(SAVED_MOVIES,
                         (ArrayList<? extends Parcelable>) movies2Save);
         }
+        outState.putString(CURRENT_SORT, sortingType);
         super.onSaveInstanceState(outState);
     }
 

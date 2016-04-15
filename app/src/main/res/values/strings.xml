@@ -7,6 +7,9 @@
     <string name="content_description_backdrop">Backdrop Images</string>
     <string name="content_description_poster">Poster Images</string>
 
+    <!-- Content Provider -->
+    <string name="content_authority">com.anakinfoxe.popularmovies</string>
+
     <!-- For Floating Action Buttons -->
     <string name="fab_favorite">Favorite</string>
     <string name="fab_sort_default">@string/fab_sort_by_popularity</string>
