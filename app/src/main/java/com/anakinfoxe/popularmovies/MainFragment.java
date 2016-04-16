@@ -29,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by xing on 1/18/16.
@@ -134,14 +135,20 @@ public class MainFragment extends Fragment {
                                         .getMovieList(sortingType, pageId);
         response.enqueue(new Callback<MovieResponse>() {
             @Override
-            public void onResponse(retrofit2.Response<MovieResponse> response) {
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                if (!response.isSuccessful()) {
+                    Log.e(LOG_TAG,
+                            "getting" + call.request().url() + ": failed: " + response.code());
+                    return;
+                }
+
                 MovieResponse resp = response.body();
                 mPosterAdapter.addMovies(resp.getMovies());
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Log.e(LOG_TAG, "getting posters error ", t);
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+                Log.e(LOG_TAG, "getting" + call.request().url() + ": failed: " + t);
             }
         });
     }
@@ -151,14 +158,20 @@ public class MainFragment extends Fragment {
                                         .getMovieList(sortingType, pageId);
         response.enqueue(new Callback<MovieResponse>() {
             @Override
-            public void onResponse(retrofit2.Response<MovieResponse> response) {
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                if (!response.isSuccessful()) {
+                    Log.e(LOG_TAG,
+                            "getting" + call.request().url() + ": failed: " + response.code());
+                    return;
+                }
+
                 MovieResponse resp = response.body();
                 mPosterAdapter.setMovies(resp.getMovies());
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Log.e(LOG_TAG, "getting posters error ", t);
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+                Log.e(LOG_TAG, "getting" + call.request().url() + ": failed: " + t);
             }
         });
     }

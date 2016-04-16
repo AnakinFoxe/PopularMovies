@@ -240,7 +240,13 @@ public class DetailFragment extends Fragment {
                                         .getMovieVideos(id);
         response.enqueue(new Callback<VideoResponse>() {
             @Override
-            public void onResponse(Response<VideoResponse> response) {
+            public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
+                if (!response.isSuccessful()) {
+                    Log.e(LOG_TAG,
+                            "getting" + call.request().url() + ": failed: " + response.code());
+                    return;
+                }
+
                 VideoResponse resp = response.body();
                 Log.d(LOG_TAG, "fetched videos: " + resp.getVideos().size());
 
@@ -252,8 +258,8 @@ public class DetailFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Log.e(LOG_TAG, "getting videos error ", t);
+            public void onFailure(Call<VideoResponse> call, Throwable t) {
+                Log.e(LOG_TAG, "getting" + call.request().url() + ": failed: " + t);
             }
         });
     }
@@ -263,7 +269,13 @@ public class DetailFragment extends Fragment {
                 .getMovieReviews(id);
         response.enqueue(new Callback<ReviewResponse>() {
             @Override
-            public void onResponse(Response<ReviewResponse> response) {
+            public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                if (!response.isSuccessful()) {
+                    Log.e(LOG_TAG,
+                            "getting" + call.request().url() + ": failed: " + response.code());
+                    return;
+                }
+
                 ReviewResponse resp = response.body();
                 Log.d(LOG_TAG, "fetched reviews: " + resp.getReviews().size());
 
@@ -273,8 +285,8 @@ public class DetailFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Log.e(LOG_TAG, "getting reviews error ", t);
+            public void onFailure(Call<ReviewResponse> call, Throwable t) {
+                Log.e(LOG_TAG, "getting" + call.request().url() + ": failed: " + t);
             }
         });
     }

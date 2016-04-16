@@ -4,12 +4,14 @@ import com.anakinfoxe.popularmovies.BuildConfig;
 import com.anakinfoxe.popularmovies.model.response.MovieResponse;
 import com.anakinfoxe.popularmovies.model.response.ReviewResponse;
 import com.anakinfoxe.popularmovies.model.response.VideoResponse;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -51,6 +53,13 @@ public class ServiceManager {
 
     }
 
+    private static final OkHttpClient client1 = new OkHttpClient.Builder()
+            .addNetworkInterceptor(new StethoInterceptor())
+            .build();
+
+    private static final OkHttpClient client2 = new OkHttpClient.Builder()
+            .addNetworkInterceptor(new StethoInterceptor())
+            .build();
 
 
     private static final Gson GSON = new GsonBuilder()
@@ -60,12 +69,14 @@ public class ServiceManager {
     // build with customized converter
     private static final Retrofit MOVIE_RETROFIT = new Retrofit.Builder()
                                 .baseUrl(API_BASE_URL)
+                                .client(client1)
                                 .addConverterFactory(GsonConverterFactory.create(GSON))
                                 .build();
 
     // build with general converter
     private static final Retrofit DETAIL_RETROFIT = new Retrofit.Builder()
                                 .baseUrl(API_BASE_URL)
+                                .client(client2)
                                 .addConverterFactory(GsonConverterFactory.create())
                                 .build();
 
