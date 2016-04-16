@@ -166,11 +166,6 @@ public class MainFragment extends Fragment {
 
 
     private void setupFab(View rootView) {
-//        mFamPoster = (FloatingActionsMenu) rootView.findViewById(R.id.fam_poster);
-//        mFabSorting = (FloatingActionButton) rootView.findViewById(R.id.fab_sorting);
-//        mFabFavorite = (FloatingActionButton) rootView.findViewById(R.id.fab_favorite);
-//        mFlInterceptor = (FrameLayout) rootView.findViewById(R.id.fl_interceptor);
-
         // interceptor will intercept the click event when fam is expanded
         mFlInterceptor.setOnClickListener(new View.OnClickListener() {
             @Override

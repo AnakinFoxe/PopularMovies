@@ -1,11 +1,15 @@
 package com.anakinfoxe.popularmovies;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,9 +27,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anakinfoxe.popularmovies.adapter.ReviewAdapter;
 import com.anakinfoxe.popularmovies.adapter.VideoAdapter;
+import com.anakinfoxe.popularmovies.data.MovieContract;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.anakinfoxe.popularmovies.model.Review;
 import com.anakinfoxe.popularmovies.model.Video;
@@ -62,6 +68,7 @@ public class DetailFragment extends Fragment {
     private Movie mMovie = null;
     private List<Video> mVideos = null;
     private List<Review> mReviews = null;
+    private boolean isFavorite = false;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", new Locale("en"));
     private DecimalFormat df = new DecimalFormat("#.#");
@@ -80,6 +87,7 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.recyclerview_reviews) RecyclerView mRvReviews;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.drawee_backdrop) SimpleDraweeView mBackdropView;
+    @Bind(R.id.fab_set_favorite) FloatingActionButton mFabSetFavorite;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -146,6 +154,8 @@ public class DetailFragment extends Fragment {
                 mReviews = savedInstanceState.getParcelableArrayList(REVIEW_OBJECTS);
                 mReviewAdapter.setReviews(mReviews);
             }
+
+            setupFab();
 
         }
 
@@ -268,4 +278,98 @@ public class DetailFragment extends Fragment {
             }
         });
     }
+
+
+    private void setupFab() {
+        mFabSetFavorite.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                isFavorite = !isFavorite;
+
+                int color = ContextCompat.getColor(getContext(), R.color.primaryBackground);
+                String msg;
+                if (isFavorite) {
+                    if (insertMovieToDb()) {
+                        color = ContextCompat.getColor(getContext(), R.color.yellow);
+                        msg = "Added to Favorite";
+                    } else
+                        msg = "Error adding movie to Favorite";
+                } else {
+                    if (deleteMovieFromDb())
+                        msg = "Removed from Favorite";
+                    else {
+                        color = ContextCompat.getColor(getContext(), R.color.yellow);
+                        msg = "Error removing movie from Favorite";
+                    }
+                }
+
+                mFabSetFavorite.setColorFilter(color);
+
+                Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
+    }
+
+
+    private boolean insertMovieToDb() {
+        if (mMovie == null)
+            return false;
+
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.MovieEntry.COLUMN_ADULT,
+                mMovie.isAdult());
+        values.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH,
+                mMovie.getBackdropPath().toString());
+        values.put(MovieContract.MovieEntry.COLUMN_HOMEPAGE,
+                mMovie.getHomepage());
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                mMovie.getId());
+        values.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE,
+                mMovie.getOriginalTitle());
+        values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,
+                mMovie.getOverview());
+        values.put(MovieContract.MovieEntry.COLUMN_POPULARITY,
+                mMovie.getPopularity());
+        values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH,
+                mMovie.getPosterPath().toString());
+        values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
+                mMovie.getReleaseDate().toString());
+        values.put(MovieContract.MovieEntry.COLUMN_RUNTIME,
+                mMovie.getRuntime());
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE,
+                mMovie.getTitle());
+        values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
+                mMovie.getVoteAverage());
+        values.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT,
+                mMovie.getVoteCount());
+
+
+        Uri uri = getContext().getContentResolver().insert(
+                MovieContract.MovieEntry.CONTENT_URI,
+                values);
+
+        long id = ContentUris.parseId(uri);
+
+        return true;
+    }
+
+
+    private boolean deleteMovieFromDb() {
+        if (mMovie == null)
+            return false;
+
+        int rowsDeleted = getContext().getContentResolver().delete(
+                MovieContract.MovieEntry.CONTENT_URI,
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ",
+                new String[]{String.valueOf(mMovie.getId())}
+        );
+
+        if (rowsDeleted > 0)
+            return true;
+        else
+            return false;
+    }
+
 }
