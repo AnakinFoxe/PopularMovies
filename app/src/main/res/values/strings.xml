@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">PopularMovies</string>
-    <string name="title_activity_detail"> </string>
 
     <string name="action_share">Share</string>
 

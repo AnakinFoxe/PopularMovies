@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
@@ -75,6 +78,8 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.textview_vote_average) TextView mVoteAvgView;
     @Bind(R.id.recyclerview_videos) RecyclerView mRvVideos;
     @Bind(R.id.recyclerview_reviews) RecyclerView mRvReviews;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.drawee_backdrop) SimpleDraweeView mBackdropView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +89,7 @@ public class DetailFragment extends Fragment {
 
         // this fragment will have option menu
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -91,6 +97,10 @@ public class DetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.detail_fragment, container, false);
 
         ButterKnife.bind(this, rootView);
+
+        // bind actionbar to the toolbar with collapsing toolbar
+        mToolbar.setTitle(" "); // I don't want to show anything on toolbar
+        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
 
         // set layout manager and adapter for videos recycler view
         RecyclerView.LayoutManager lmVideos = new LinearLayoutManager(mRvVideos.getContext(),
@@ -107,15 +117,23 @@ public class DetailFragment extends Fragment {
         mRvReviews.setAdapter(mReviewAdapter);
 
         if (savedInstanceState == null) {
-            // obtain movie object
             Bundle args = getArguments();
             if (args != null)
                 mMovie = args.getParcelable(MOVIE_OBJECT);
+            else {
+                // obtain movie object from intent
+                Intent intent = getActivity().getIntent();
+                if (intent != null && intent.hasExtra(MOVIE_OBJECT))
+                    mMovie = intent.getExtras().getParcelable(MOVIE_OBJECT);
+            }
         } else
             mMovie = savedInstanceState.getParcelable(DetailFragment.MOVIE_OBJECT);
 
         // set data to view
         if (mMovie != null) {
+            // set backdrop
+            mBackdropView.setImageURI(mMovie.getBackdropPath());
+
             showMoviePrimaryInfo(mMovie);
 
             if (savedInstanceState == null) {
