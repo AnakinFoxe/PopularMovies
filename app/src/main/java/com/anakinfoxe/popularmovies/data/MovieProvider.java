@@ -237,9 +237,6 @@ public class MovieProvider extends ContentProvider {
         // register a content observer to watch changes happened to this uri
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
 
-        // end
-        rDb.close();
-
         return retCursor;
     }
 
@@ -292,9 +289,6 @@ public class MovieProvider extends ContentProvider {
 
         // register a content observer to watch changes happened to this uri
         getContext().getContentResolver().notifyChange(uri, null);
-
-        // end
-        wDb.close();
 
         return retUri;
     }

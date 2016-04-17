@@ -1,8 +1,10 @@
 package com.anakinfoxe.popularmovies;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -293,30 +295,37 @@ public class DetailFragment extends Fragment {
 
 
     private void setupFab() {
+        if (checkMovieInDb(mMovie)) {
+            isFavorite = true;
+
+            setButtonToFavorite();
+        } else {
+            isFavorite = false;
+
+            setButtonToNonFavorite();
+        }
+
         mFabSetFavorite.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
                 isFavorite = !isFavorite;
 
-                int color = ContextCompat.getColor(getContext(), R.color.primaryBackground);
                 String msg;
                 if (isFavorite) {
-                    if (insertMovieToDb()) {
-                        color = ContextCompat.getColor(getContext(), R.color.yellow);
+                    if (insertMovieToDb(mMovie)) {
+                        setButtonToFavorite();
                         msg = "Added to Favorite";
                     } else
                         msg = "Error adding movie to Favorite";
                 } else {
-                    if (deleteMovieFromDb())
+                    if (deleteMovieFromDb(mMovie)) {
+                        setButtonToNonFavorite();
                         msg = "Removed from Favorite";
-                    else {
-                        color = ContextCompat.getColor(getContext(), R.color.yellow);
+                    } else
                         msg = "Error removing movie from Favorite";
-                    }
-                }
 
-                mFabSetFavorite.setColorFilter(color);
+                }
 
                 Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT)
                         .show();
@@ -324,39 +333,22 @@ public class DetailFragment extends Fragment {
         });
     }
 
+    private void setButtonToFavorite() {
+        int color = ContextCompat.getColor(getContext(), R.color.yellow);
+        mFabSetFavorite.setColorFilter(color);
+    }
 
-    private boolean insertMovieToDb() {
-        if (mMovie == null)
+    private void setButtonToNonFavorite() {
+        int color = ContextCompat.getColor(getContext(), R.color.primaryBackground);
+        mFabSetFavorite.setColorFilter(color);
+    }
+
+
+    private boolean insertMovieToDb(Movie movie) {
+        ContentValues values = buildMovieContentValues(movie);
+
+        if (values == null)
             return false;
-
-        ContentValues values = new ContentValues();
-        values.put(MovieContract.MovieEntry.COLUMN_ADULT,
-                mMovie.isAdult());
-        values.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH,
-                mMovie.getBackdropPath().toString());
-        values.put(MovieContract.MovieEntry.COLUMN_HOMEPAGE,
-                mMovie.getHomepage());
-        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-                mMovie.getId());
-        values.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE,
-                mMovie.getOriginalTitle());
-        values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,
-                mMovie.getOverview());
-        values.put(MovieContract.MovieEntry.COLUMN_POPULARITY,
-                mMovie.getPopularity());
-        values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH,
-                mMovie.getPosterPath().toString());
-        values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
-                mMovie.getReleaseDate().toString());
-        values.put(MovieContract.MovieEntry.COLUMN_RUNTIME,
-                mMovie.getRuntime());
-        values.put(MovieContract.MovieEntry.COLUMN_TITLE,
-                mMovie.getTitle());
-        values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
-                mMovie.getVoteAverage());
-        values.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT,
-                mMovie.getVoteCount());
-
 
         Uri uri = getContext().getContentResolver().insert(
                 MovieContract.MovieEntry.CONTENT_URI,
@@ -368,20 +360,86 @@ public class DetailFragment extends Fragment {
     }
 
 
-    private boolean deleteMovieFromDb() {
-        if (mMovie == null)
+    private boolean deleteMovieFromDb(Movie movie) {
+        if (movie == null)
             return false;
 
         int rowsDeleted = getContext().getContentResolver().delete(
                 MovieContract.MovieEntry.CONTENT_URI,
                 MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ",
-                new String[]{String.valueOf(mMovie.getId())}
+                new String[]{String.valueOf(movie.getId())}
         );
 
-        if (rowsDeleted > 0)
+        return rowsDeleted > 0;
+    }
+
+    private boolean checkMovieInDb(Movie movie) {
+        Cursor c = getContext().getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ",
+                new String[]{String.valueOf(movie.getId())},
+                null
+        );
+
+        if (c != null && c.getCount() > 0) {
+            updateMovieInDb(movie);
+            c.close();
             return true;
-        else
+        }
+
+        return false;
+    }
+
+    private boolean updateMovieInDb(Movie movie) {
+        ContentValues values = buildMovieContentValues(movie);
+
+        if (values == null)
             return false;
+
+        int rowsEffected = getContext().getContentResolver().update(
+                MovieContract.MovieEntry.CONTENT_URI,
+                values,
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ",
+                new String[]{String.valueOf(movie.getId())}
+        );
+
+        return rowsEffected > 0;
+    }
+
+    private ContentValues buildMovieContentValues(Movie movie) {
+        if (movie == null)
+            return null;
+
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.MovieEntry.COLUMN_ADULT,
+                movie.isAdult());
+        values.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH,
+                movie.getBackdropPath().toString());
+        values.put(MovieContract.MovieEntry.COLUMN_HOMEPAGE,
+                movie.getHomepage());
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                movie.getId());
+        values.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE,
+                movie.getOriginalTitle());
+        values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,
+                movie.getOverview());
+        values.put(MovieContract.MovieEntry.COLUMN_POPULARITY,
+                movie.getPopularity());
+        values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH,
+                movie.getPosterPath().toString());
+        values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
+                movie.getReleaseDate().toString());
+        values.put(MovieContract.MovieEntry.COLUMN_RUNTIME,
+                movie.getRuntime());
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE,
+                movie.getTitle());
+        values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
+                movie.getVoteAverage());
+        values.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT,
+                movie.getVoteCount());
+
+        return values;
     }
 
 }
