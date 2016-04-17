@@ -1,6 +1,8 @@
 package com.anakinfoxe.popularmovies;
 
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -12,16 +14,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
+import com.anakinfoxe.popularmovies.data.MovieContract;
 import com.anakinfoxe.popularmovies.listener.InfiniteScrollListener;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.anakinfoxe.popularmovies.model.response.MovieResponse;
 import com.anakinfoxe.popularmovies.service.ServiceManager;
+import com.anakinfoxe.popularmovies.util.Helper;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +47,8 @@ public class MainFragment extends Fragment {
 
     private PosterAdapter mPosterAdapter;
 
-    private String sortingType;
+    private InfiniteScrollListener mInfiniteScrollListener;
+    private String mSortingType;
 
     @Bind(R.id.fam_poster) FloatingActionsMenu mFamPoster;
     @Bind(R.id.fab_sorting) FloatingActionButton mFabSorting;
@@ -76,6 +81,13 @@ public class MainFragment extends Fragment {
         else
             layoutManager = new GridLayoutManager(mRvPosters.getContext(), 3);
 
+        mInfiniteScrollListener = new InfiniteScrollListener(layoutManager, 2) {
+            @Override
+            public void onLoadMore(int page, int totalItemCount) {
+                updatePosters(mSortingType, page);
+            }
+        };
+
         // set layout manager
         mRvPosters.setLayoutManager(layoutManager);
 
@@ -87,23 +99,19 @@ public class MainFragment extends Fragment {
 
         // init posters
         if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_MOVIES)) {
-            sortingType = savedInstanceState.getString(CURRENT_SORT);
+            mSortingType = savedInstanceState.getString(CURRENT_SORT);
 
             List<Movie> savedMovies = savedInstanceState.getParcelableArrayList(SAVED_MOVIES);
             mPosterAdapter.setMovies(savedMovies);
         } else {
-            sortingType = ServiceManager.SORTING_BY_POPULARITY;
+            mSortingType = ServiceManager.SORTING_BY_POPULARITY;
 
-            replacePosters(sortingType, 1);
+            replacePosters(mSortingType, 1);
         }
 
         // set OnScrollListener to load more data
-        mRvPosters.addOnScrollListener(new InfiniteScrollListener(layoutManager, 2) {
-            @Override
-            public void onLoadMore(int page, int totalItemCount) {
-                updatePosters(sortingType, page);
-            }
-        });
+        mRvPosters.clearOnScrollListeners();
+        mRvPosters.addOnScrollListener(mInfiniteScrollListener);
 
         // setup floating action buttons
         setupFab(rootView);
@@ -120,7 +128,7 @@ public class MainFragment extends Fragment {
                 outState.putParcelableArrayList(SAVED_MOVIES,
                         (ArrayList<? extends Parcelable>) movies2Save);
         }
-        outState.putString(CURRENT_SORT, sortingType);
+        outState.putString(CURRENT_SORT, mSortingType);
         super.onSaveInstanceState(outState);
     }
 
@@ -196,12 +204,12 @@ public class MainFragment extends Fragment {
                         mFlInterceptor.setClickable(true);
                         mFlInterceptor.setVisibility(View.VISIBLE);
 
-                        if (sortingType.equals(ServiceManager.SORTING_BY_POPULARITY)) {
+                        if (mSortingType.equals(ServiceManager.SORTING_BY_POPULARITY)) {
                             mFabSorting.setTitle(getResources()
                                     .getString(R.string.fab_sort_by_rating));
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
                                     R.drawable.ic_star_rate_white_18dp));
-                        } else if (sortingType.equals(ServiceManager.SORTING_BY_RATING)) {
+                        } else if (mSortingType.equals(ServiceManager.SORTING_BY_RATING)) {
                             mFabSorting.setTitle(getResources()
                                     .getString(R.string.fab_sort_by_popularity));
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
@@ -222,11 +230,15 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // flip
-                sortingType = (sortingType.equals(ServiceManager.SORTING_BY_POPULARITY) ?
+                mSortingType = (mSortingType.equals(ServiceManager.SORTING_BY_POPULARITY) ?
                         ServiceManager.SORTING_BY_RATING : ServiceManager.SORTING_BY_POPULARITY);
 
                 // replace posters according to new sorting
-                replacePosters(sortingType, 1);
+                replacePosters(mSortingType, 1);
+
+                // add infinite onScroll listener
+                mRvPosters.clearOnScrollListeners();
+                mRvPosters.addOnScrollListener(mInfiniteScrollListener);
 
                 // collapse fam
                 mFamPoster.collapse();
@@ -236,12 +248,77 @@ public class MainFragment extends Fragment {
         mFabFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Oops!! TODO in next stage!", Toast.LENGTH_SHORT)
-                        .show();
+                mPosterAdapter.setMovies(getMoviesFromDb());
+
+                // remove infinite onScroll listener
+                mRvPosters.clearOnScrollListeners();
 
                 // collapse fam
                 mFamPoster.collapse();
             }
         });
+    }
+
+    private List<Movie> getMoviesFromDb() {
+        List<Movie> movies = new ArrayList<>();
+
+        Cursor c = getContext().getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (c != null) {
+            while (c.moveToNext()) {
+                movies.add(buildMovieObject(c));
+            }
+            c.close();
+        }
+
+        return movies;
+    }
+
+    private Movie buildMovieObject(Cursor c) {
+        if (c != null) {
+            Movie movie = new Movie();
+
+            int colAdult = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_ADULT);
+            int colBackdropPath = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH);
+            int colHomePage = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_HOMEPAGE);
+            int colMovieId = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+            int colOriginalTitle = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE);
+            int colOverview = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW);
+            int colPopularity = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_POPULARITY);
+            int colPosterPath = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
+            int colReleaseDate = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE);
+            int colRuntime = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_RUNTIME);
+            int colTitle = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE);
+            int colVoteAverage = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE);
+            int colVoteCount = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_COUNT);
+
+            movie.setAdult(Boolean.parseBoolean(c.getString(colAdult)));
+            movie.setBackdropPath(Uri.parse(c.getString(colBackdropPath)));
+            movie.setHomepage(c.getString(colHomePage));
+            movie.setId(c.getLong(colMovieId));
+            movie.setOriginalTitle(c.getString(colOriginalTitle));
+            movie.setOverview(c.getString(colOverview));
+            movie.setPopularity(c.getDouble(colPopularity));
+            movie.setPosterPath(Uri.parse(c.getString(colPosterPath)));
+            try {
+                movie.setReleaseDate(Helper.convertDateFromString(c.getString(colReleaseDate)));
+            } catch (ParseException e) {
+                Log.e(LOG_TAG, "Date parsing error ", e);
+            }
+            movie.setRuntime(c.getInt(colRuntime));
+            movie.setTitle(c.getString(colTitle));
+            movie.setVoteAverage(c.getDouble(colVoteAverage));
+            movie.setVoteCount(c.getInt(colVoteCount));
+
+            return movie;
+        }
+
+        return null;
     }
 }

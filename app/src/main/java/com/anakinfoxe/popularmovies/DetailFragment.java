@@ -429,7 +429,7 @@ public class DetailFragment extends Fragment {
         values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH,
                 movie.getPosterPath().toString());
         values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
-                movie.getReleaseDate().toString());
+                Helper.convertDateToString(movie.getReleaseDate()));
         values.put(MovieContract.MovieEntry.COLUMN_RUNTIME,
                 movie.getRuntime());
         values.put(MovieContract.MovieEntry.COLUMN_TITLE,

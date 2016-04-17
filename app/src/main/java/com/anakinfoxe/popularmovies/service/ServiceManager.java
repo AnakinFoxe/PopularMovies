@@ -53,14 +53,6 @@ public class ServiceManager {
 
     }
 
-    private static final OkHttpClient client1 = new OkHttpClient.Builder()
-            .addNetworkInterceptor(new StethoInterceptor())
-            .build();
-
-    private static final OkHttpClient client2 = new OkHttpClient.Builder()
-            .addNetworkInterceptor(new StethoInterceptor())
-            .build();
-
 
     private static final Gson GSON = new GsonBuilder()
                                 .registerTypeAdapterFactory(new MovieTypeAdapterFactory())
@@ -69,14 +61,18 @@ public class ServiceManager {
     // build with customized converter
     private static final Retrofit MOVIE_RETROFIT = new Retrofit.Builder()
                                 .baseUrl(API_BASE_URL)
-                                .client(client1)
+                                .client(new OkHttpClient.Builder()
+                                        .addNetworkInterceptor(new StethoInterceptor())
+                                        .build())
                                 .addConverterFactory(GsonConverterFactory.create(GSON))
                                 .build();
 
     // build with general converter
     private static final Retrofit DETAIL_RETROFIT = new Retrofit.Builder()
                                 .baseUrl(API_BASE_URL)
-                                .client(client2)
+                                .client(new OkHttpClient.Builder()
+                                        .addNetworkInterceptor(new StethoInterceptor())
+                                        .build())
                                 .addConverterFactory(GsonConverterFactory.create())
                                 .build();
 

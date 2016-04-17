@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.anakinfoxe.popularmovies.model.Movie;
+import com.anakinfoxe.popularmovies.util.Helper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -23,8 +24,6 @@ public class MovieTypeAdapterFactory extends CustomizedTypeAdapterFactory<Movie>
     private static final String NAME_POSTER_PATH       = "poster_path";
     private static final String NAME_RELEASE_DATE      = "release_date";
 
-    private static final SimpleDateFormat FMT          =
-            new SimpleDateFormat("yyyy-MM-dd", new Locale("en"));
     private static final String POSTER_BASE_URL     = "http://image.tmdb.org/t/p/w342";
     private static final String BACKDROP_BASE_URL   = "http://image.tmdb.org/t/p/w780";
 
@@ -55,7 +54,7 @@ public class MovieTypeAdapterFactory extends CustomizedTypeAdapterFactory<Movie>
         jsonObject.addProperty(NAME_POSTER_PATH, posterPath);
 
         // date => string
-        String releaseDate = FMT.format(source.getReleaseDate());
+        String releaseDate = Helper.convertDateToString(source.getReleaseDate());
         jsonObject.addProperty(NAME_RELEASE_DATE, releaseDate);
     }
 
@@ -86,9 +85,9 @@ public class MovieTypeAdapterFactory extends CustomizedTypeAdapterFactory<Movie>
                                         .get(NAME_RELEASE_DATE)
                                         .getAsString();
         try {
-            source.setReleaseDate(FMT.parse(releaseDate));
+            source.setReleaseDate(Helper.convertDateFromString(releaseDate));
         } catch (ParseException e) {
-            Log.v(LOG_TAG, "Date parsing error ", e);
+            Log.e(LOG_TAG, "Date parsing error ", e);
         }
 
     }
