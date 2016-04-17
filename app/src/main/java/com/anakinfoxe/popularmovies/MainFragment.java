@@ -44,11 +44,13 @@ public class MainFragment extends Fragment {
 
     private static final String SAVED_MOVIES = "saved_movies";
     private static final String CURRENT_SORT = "current_sort";
+    private static final String FAVORITE     = "favorite";
 
     private PosterAdapter mPosterAdapter;
 
     private InfiniteScrollListener mInfiniteScrollListener;
     private String mSortingType;
+    private boolean isFavorite;
 
     @Bind(R.id.fam_poster) FloatingActionsMenu mFamPoster;
     @Bind(R.id.fab_sorting) FloatingActionButton mFabSorting;
@@ -100,21 +102,23 @@ public class MainFragment extends Fragment {
         // init posters
         if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_MOVIES)) {
             mSortingType = savedInstanceState.getString(CURRENT_SORT);
-
+            isFavorite = savedInstanceState.getBoolean(FAVORITE);
             List<Movie> savedMovies = savedInstanceState.getParcelableArrayList(SAVED_MOVIES);
             mPosterAdapter.setMovies(savedMovies);
         } else {
             mSortingType = ServiceManager.SORTING_BY_POPULARITY;
-
+            isFavorite = false;
             replacePosters(mSortingType, 1);
         }
 
         // set OnScrollListener to load more data
-        mRvPosters.clearOnScrollListeners();
-        mRvPosters.addOnScrollListener(mInfiniteScrollListener);
+        if (!isFavorite) {
+            mRvPosters.clearOnScrollListeners();
+            mRvPosters.addOnScrollListener(mInfiniteScrollListener);
+        }
 
         // setup floating action buttons
-        setupFab(rootView);
+        setupFab();
 
         return rootView;
     }
@@ -129,6 +133,7 @@ public class MainFragment extends Fragment {
                         (ArrayList<? extends Parcelable>) movies2Save);
         }
         outState.putString(CURRENT_SORT, mSortingType);
+        outState.putBoolean(FAVORITE, isFavorite);
         super.onSaveInstanceState(outState);
     }
 
@@ -186,7 +191,7 @@ public class MainFragment extends Fragment {
 
 
 
-    private void setupFab(View rootView) {
+    private void setupFab() {
         // interceptor will intercept the click event when fam is expanded
         mFlInterceptor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,6 +247,8 @@ public class MainFragment extends Fragment {
 
                 // collapse fam
                 mFamPoster.collapse();
+
+                isFavorite = false;
             }
         });
 
@@ -255,6 +262,8 @@ public class MainFragment extends Fragment {
 
                 // collapse fam
                 mFamPoster.collapse();
+
+                isFavorite = true;
             }
         });
     }

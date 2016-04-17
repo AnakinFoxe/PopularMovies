@@ -72,7 +72,6 @@ public class DetailFragment extends Fragment {
     private List<Review> mReviews = null;
     private boolean isFavorite = false;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", new Locale("en"));
     private DecimalFormat df = new DecimalFormat("#.#");
 
     private VideoAdapter mVideoAdapter;
@@ -187,7 +186,9 @@ public class DetailFragment extends Fragment {
         mPosterView.setImageURI(movie.getPosterPath());
         mTitleView.setText(movie.getTitle().toUpperCase());
         mOverviewView.setText(movie.getOverview());
-        mRelDateView.setText(sdf.format(movie.getReleaseDate()));
+        mRelDateView.setText(Helper.convertDateToString(movie.getReleaseDate()));
+
+
 
         // show different size of text
         String text = df.format(movie.getVoteAverage()) + "/10";
