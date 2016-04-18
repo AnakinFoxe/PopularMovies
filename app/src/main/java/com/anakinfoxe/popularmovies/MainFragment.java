@@ -220,6 +220,11 @@ public class MainFragment extends Fragment {
                             mFabSorting.setIconDrawable(ContextCompat.getDrawable(getContext(),
                                     R.drawable.ic_trending_up_white_18dp));
                         }
+
+                        if (isFavorite)
+                            mFabFavorite.setVisibility(View.GONE);
+                        else
+                            mFabFavorite.setVisibility(View.VISIBLE);
                     }
 
                     @Override

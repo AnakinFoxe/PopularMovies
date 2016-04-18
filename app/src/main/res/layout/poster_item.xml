@@ -7,6 +7,5 @@
     android:layout_height="wrap_content"
     style="@style/primaryImage"
     fresco:viewAspectRatio="0.66667"
-    fresco:placeholderImage="@drawable/placeholder_poster"
     tools:context="adapter.PosterAdapter"
     />

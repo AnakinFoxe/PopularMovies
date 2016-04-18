@@ -31,7 +31,6 @@
                 android:fitsSystemWindows="true"
                 style="@style/primaryImage"
                 fresco:viewAspectRatio="1.77778"
-                fresco:placeholderImage="@drawable/placeholder_backdrop"
                 />
 
             <android.support.v7.widget.Toolbar
@@ -105,7 +104,6 @@
                         android:layout_height="wrap_content"
                         fresco:viewAspectRatio="0.66667"
                         style="@style/primaryImage"
-                        fresco:placeholderImage="@drawable/placeholder_poster"
                         />
 
                     <TextView
