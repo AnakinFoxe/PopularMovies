@@ -5,8 +5,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,6 +22,7 @@ import android.widget.Toast;
 
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
 import com.anakinfoxe.popularmovies.data.MovieContract;
+import com.anakinfoxe.popularmovies.data.MovieHelper;
 import com.anakinfoxe.popularmovies.listener.InfiniteScrollListener;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.anakinfoxe.popularmovies.model.response.MovieResponse;
@@ -40,7 +45,7 @@ import retrofit2.Response;
 /**
  * Created by xing on 1/18/16.
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
@@ -53,6 +58,8 @@ public class MainFragment extends Fragment {
     private InfiniteScrollListener mInfiniteScrollListener;
     private String mSortingType;
     private boolean isFavorite;
+
+    private static final int MAIN_LOADER = 0;
 
     @Bind(R.id.fam_poster) FloatingActionsMenu mFamPoster;
     @Bind(R.id.fab_sorting) FloatingActionButton mFabSorting;
@@ -113,11 +120,13 @@ public class MainFragment extends Fragment {
             replacePosters(mSortingType, 1);
         }
 
-        // set OnScrollListener to load more data
+        getLoaderManager().destroyLoader(MAIN_LOADER);
         if (!isFavorite) {
+            // set OnScrollListener to load more data
             mRvPosters.clearOnScrollListeners();
             mRvPosters.addOnScrollListener(mInfiniteScrollListener);
-        }
+        } else
+            getLoaderManager().initLoader(MAIN_LOADER, null, this);
 
         // setup floating action buttons
         setupFab();
@@ -139,6 +148,28 @@ public class MainFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(
+                getActivity(),
+                MovieContract.MovieEntry.CONTENT_URI,
+                MovieHelper.MOVIE_ENTRY_COLUMNS,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        displayFavorite();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
     public void loadFirstMovie() {
         if (mPosterAdapter != null)
             mPosterAdapter.loadFirstMovie();
@@ -148,6 +179,9 @@ public class MainFragment extends Fragment {
     private void updatePosters(String sortingType, int pageId) {
         if (!Network.isConnected(getContext())) {
             displayFavorite();
+
+            getLoaderManager().destroyLoader(MAIN_LOADER);
+            getLoaderManager().initLoader(MAIN_LOADER, null, this);
 
             Toast.makeText(getActivity(),
                     "Network not available. Display favorite movies only.",
@@ -182,6 +216,9 @@ public class MainFragment extends Fragment {
     private void replacePosters(String sortingType, int pageId) {
         if (!Network.isConnected(getContext())) {
             displayFavorite();
+
+            getLoaderManager().destroyLoader(MAIN_LOADER);
+            getLoaderManager().initLoader(MAIN_LOADER, null, this);
 
             Toast.makeText(getActivity(),
                     "Network not available. Display favorite movies only.",
@@ -273,6 +310,7 @@ public class MainFragment extends Fragment {
                 // add infinite onScroll listener
                 mRvPosters.clearOnScrollListeners();
                 mRvPosters.addOnScrollListener(mInfiniteScrollListener);
+                getLoaderManager().destroyLoader(MAIN_LOADER);
 
                 // collapse fam
                 mFamPoster.collapse();
@@ -282,10 +320,15 @@ public class MainFragment extends Fragment {
             }
         });
 
+        final LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = this;
+
         mFabFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 displayFavorite();
+
+                getLoaderManager().destroyLoader(MAIN_LOADER);
+                getLoaderManager().initLoader(MAIN_LOADER, null, loaderCallbacks);
 
                 // collapse fam
                 mFamPoster.collapse();
@@ -327,37 +370,24 @@ public class MainFragment extends Fragment {
         if (c != null) {
             Movie movie = new Movie();
 
-            int colAdult = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_ADULT);
-            int colBackdropPath = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH);
-            int colHomePage = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_HOMEPAGE);
-            int colMovieId = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
-            int colOriginalTitle = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE);
-            int colOverview = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW);
-            int colPopularity = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_POPULARITY);
-            int colPosterPath = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
-            int colReleaseDate = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE);
-            int colRuntime = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_RUNTIME);
-            int colTitle = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE);
-            int colVoteAverage = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE);
-            int colVoteCount = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_COUNT);
-
-            movie.setAdult(Boolean.parseBoolean(c.getString(colAdult)));
-            movie.setBackdropPath(Uri.parse(c.getString(colBackdropPath)));
-            movie.setHomepage(c.getString(colHomePage));
-            movie.setId(c.getLong(colMovieId));
-            movie.setOriginalTitle(c.getString(colOriginalTitle));
-            movie.setOverview(c.getString(colOverview));
-            movie.setPopularity(c.getDouble(colPopularity));
-            movie.setPosterPath(Uri.parse(c.getString(colPosterPath)));
+            movie.setAdult(Boolean.parseBoolean(c.getString(MovieHelper.COL_ADULT)));
+            movie.setBackdropPath(Uri.parse(c.getString(MovieHelper.COL_BACKDROP_PATH)));
+            movie.setHomepage(c.getString(MovieHelper.COL_HOMEPAGE));
+            movie.setId(c.getLong(MovieHelper.COL_MOVIE_ID));
+            movie.setOriginalTitle(c.getString(MovieHelper.COL_ORIGINAL_TITLE));
+            movie.setOverview(c.getString(MovieHelper.COL_OVERVIEW));
+            movie.setPopularity(c.getDouble(MovieHelper.COL_POPULARITY));
+            movie.setPosterPath(Uri.parse(c.getString(MovieHelper.COL_POSTER_PATH)));
             try {
-                movie.setReleaseDate(Helper.convertDateFromString(c.getString(colReleaseDate)));
+                movie.setReleaseDate(Helper
+                        .convertDateFromString(c.getString(MovieHelper.COL_RELEASE_DATE)));
             } catch (ParseException e) {
                 Log.e(LOG_TAG, "Date parsing error ", e);
             }
-            movie.setRuntime(c.getInt(colRuntime));
-            movie.setTitle(c.getString(colTitle));
-            movie.setVoteAverage(c.getDouble(colVoteAverage));
-            movie.setVoteCount(c.getInt(colVoteCount));
+            movie.setRuntime(c.getInt(MovieHelper.COL_RUNTIME));
+            movie.setTitle(c.getString(MovieHelper.COL_TITLE));
+            movie.setVoteAverage(c.getDouble(MovieHelper.COL_VOTE_AVERAGE));
+            movie.setVoteCount(c.getInt(MovieHelper.COL_VOTE_COUNT));
 
             return movie;
         }
