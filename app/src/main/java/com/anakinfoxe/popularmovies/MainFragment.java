@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.anakinfoxe.popularmovies.adapter.PosterAdapter;
 import com.anakinfoxe.popularmovies.data.MovieContract;
@@ -22,6 +23,7 @@ import com.anakinfoxe.popularmovies.model.Movie;
 import com.anakinfoxe.popularmovies.model.response.MovieResponse;
 import com.anakinfoxe.popularmovies.service.ServiceManager;
 import com.anakinfoxe.popularmovies.util.Helper;
+import com.anakinfoxe.popularmovies.util.Network;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
@@ -144,6 +146,15 @@ public class MainFragment extends Fragment {
 
 
     private void updatePosters(String sortingType, int pageId) {
+        if (!Network.isConnected(getContext())) {
+            displayFavorite();
+
+            Toast.makeText(getActivity(),
+                    "Network not available. Display favorite movies only.",
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
+
         Call<MovieResponse> response = ServiceManager.getMovieService()
                                         .getMovieList(sortingType, pageId);
         response.enqueue(new Callback<MovieResponse>() {
@@ -151,7 +162,7 @@ public class MainFragment extends Fragment {
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 if (!response.isSuccessful()) {
                     Log.e(LOG_TAG,
-                            "getting" + call.request().url() + ": failed: " + response.code());
+                            "getting " + call.request().url() + ": failed: " + response.code());
                     return;
                 }
 
@@ -161,12 +172,21 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable t) {
-                Log.e(LOG_TAG, "getting" + call.request().url() + ": failed: " + t);
+                Log.e(LOG_TAG, "getting " + call.request().url() + ": failed: " + t);
             }
         });
     }
 
     private void replacePosters(String sortingType, int pageId) {
+        if (!Network.isConnected(getContext())) {
+            displayFavorite();
+
+            Toast.makeText(getActivity(),
+                    "Network not available. Display favorite movies only.",
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
+
         Call<MovieResponse> response = ServiceManager.getMovieService()
                                         .getMovieList(sortingType, pageId);
         response.enqueue(new Callback<MovieResponse>() {
@@ -174,7 +194,7 @@ public class MainFragment extends Fragment {
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 if (!response.isSuccessful()) {
                     Log.e(LOG_TAG,
-                            "getting" + call.request().url() + ": failed: " + response.code());
+                            "getting " + call.request().url() + ": failed: " + response.code());
                     return;
                 }
 
@@ -184,7 +204,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable t) {
-                Log.e(LOG_TAG, "getting" + call.request().url() + ": failed: " + t);
+                Log.e(LOG_TAG, "getting " + call.request().url() + ": failed: " + t);
             }
         });
     }
@@ -253,24 +273,29 @@ public class MainFragment extends Fragment {
                 // collapse fam
                 mFamPoster.collapse();
 
-                isFavorite = false;
+                if (Network.isConnected(getContext()))
+                    isFavorite = false;
             }
         });
 
         mFabFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPosterAdapter.setMovies(getMoviesFromDb());
-
-                // remove infinite onScroll listener
-                mRvPosters.clearOnScrollListeners();
+                displayFavorite();
 
                 // collapse fam
                 mFamPoster.collapse();
-
-                isFavorite = true;
             }
         });
+    }
+
+    private void displayFavorite() {
+        mPosterAdapter.setMovies(getMoviesFromDb());
+
+        // remove infinite onScroll listener
+        mRvPosters.clearOnScrollListeners();
+
+        isFavorite = true;
     }
 
     private List<Movie> getMoviesFromDb() {
