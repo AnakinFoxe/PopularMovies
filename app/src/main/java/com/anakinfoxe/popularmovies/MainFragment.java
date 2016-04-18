@@ -139,9 +139,9 @@ public class MainFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public void setmTwoPane(boolean mTwoPane) {
+    public void loadFirstMovie() {
         if (mPosterAdapter != null)
-            mPosterAdapter.setmTwoPane(mTwoPane);
+            mPosterAdapter.loadFirstMovie();
     }
 
 
@@ -153,6 +153,8 @@ public class MainFragment extends Fragment {
                     "Network not available. Display favorite movies only.",
                     Toast.LENGTH_SHORT)
                     .show();
+
+            return;
         }
 
         Call<MovieResponse> response = ServiceManager.getMovieService()
@@ -185,6 +187,8 @@ public class MainFragment extends Fragment {
                     "Network not available. Display favorite movies only.",
                     Toast.LENGTH_SHORT)
                     .show();
+
+            return;
         }
 
         Call<MovieResponse> response = ServiceManager.getMovieService()

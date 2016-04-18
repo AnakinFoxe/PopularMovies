@@ -11,7 +11,10 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Cal
 
     private static final String DETAILFRAGMENT_TAG  = "DF_TAG";
 
+    private static final String INITED_FLAG         = "inited_flag";
+
     private boolean mTwoPane;
+    private boolean mInited = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +34,18 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Cal
         } else
             mTwoPane = false;
 
-        MainFragment mf = (MainFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.fragment_main);
-        mf.setmTwoPane(mTwoPane);
+        if (savedInstanceState != null && savedInstanceState.containsKey(INITED_FLAG))
+            mInited = savedInstanceState.getBoolean(INITED_FLAG);
 
+        // trigger loading the first movie
+        if (mTwoPane && !mInited) {
+            MainFragment mf = (MainFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.fragment_main);
+
+            mf.loadFirstMovie();
+        }
+
+        mInited = true;
     }
 
     @Override
@@ -54,5 +65,12 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Cal
             intent.putExtra(DetailFragment.MOVIE_OBJECT, movie);
             startActivity(intent);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(INITED_FLAG, mInited);
+
+        super.onSaveInstanceState(outState);
     }
 }

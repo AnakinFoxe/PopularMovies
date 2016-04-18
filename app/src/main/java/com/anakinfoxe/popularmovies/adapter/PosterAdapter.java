@@ -1,18 +1,12 @@
 package com.anakinfoxe.popularmovies.adapter;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.anakinfoxe.popularmovies.DetailActivity;
-import com.anakinfoxe.popularmovies.DetailFragment;
-import com.anakinfoxe.popularmovies.MainActivity;
 import com.anakinfoxe.popularmovies.R;
 import com.anakinfoxe.popularmovies.model.Movie;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -34,8 +28,6 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
 
     private Activity mActivity;
 
-    private boolean mTwoPane = false;
-
     public PosterAdapter(Activity a) {
         this.mActivity = a;
 
@@ -49,11 +41,6 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
     public void setMovies(List<Movie> movies) {
         this.mMovies = movies;
 
-        // set the first one as default
-        if (mTwoPane && movies != null && movies.size() > 0) {
-            ((CallBack) mActivity).onItemSelected(movies.get(0));
-        }
-
         notifyDataSetChanged();
     }
 
@@ -63,9 +50,11 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    public void setmTwoPane(boolean mTwoPane) {
-        this.mTwoPane = mTwoPane;
+    public void loadFirstMovie() {
+        if (mMovies != null && mMovies.size() > 0)
+            ((CallBack) mActivity).onItemSelected(mMovies.get(0));
     }
+
 
     public interface CallBack {
         void onItemSelected(Movie movie);
@@ -109,7 +98,6 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
                 // pass the movie obj to main activity
                 if (movie != null)
                     ((CallBack) mActivity).onItemSelected(movie);
-
             }
         });
     }

@@ -175,10 +175,17 @@ public class DetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(MOVIE_OBJECT, mMovie);
-        outState.putParcelableArrayList(VIDEO_OBJECTS,
-                new ArrayList<Parcelable>(mVideos));
-        outState.putParcelableArrayList(REVIEW_OBJECTS,
-                new ArrayList<Parcelable>(mReviews));
+
+        ArrayList<Parcelable> videos = new ArrayList<>();
+        if (mVideos != null)
+            videos.addAll(mVideos);
+        outState.putParcelableArrayList(VIDEO_OBJECTS, videos);
+
+        ArrayList<Parcelable> reviews = new ArrayList<>();
+        if (mReviews != null)
+            reviews.addAll(reviews);
+        outState.putParcelableArrayList(REVIEW_OBJECTS, reviews);
+
         super.onSaveInstanceState(outState);
     }
 
