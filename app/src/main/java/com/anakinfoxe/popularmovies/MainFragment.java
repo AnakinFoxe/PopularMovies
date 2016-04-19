@@ -170,11 +170,15 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     }
 
-    public void loadFirstMovie() {
+    public void setmTwoPane(boolean mTwoPane) {
         if (mPosterAdapter != null)
-            mPosterAdapter.loadFirstMovie();
+            mPosterAdapter.setmTwoPane(mTwoPane);
     }
 
+    public void setmInited(boolean mInited) {
+        if (mPosterAdapter != null)
+            mPosterAdapter.setmInited(mInited);
+    }
 
     private void updatePosters(String sortingType, int pageId) {
         if (!Network.isConnected(getContext())) {

@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Cal
             MainFragment mf = (MainFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.fragment_main);
 
-            mf.loadFirstMovie();
+            mf.setmTwoPane(mTwoPane);
+            mf.setmInited(mInited);
         }
 
         mInited = true;

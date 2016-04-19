@@ -7,5 +7,6 @@
     android:layout_height="wrap_content"
     style="@style/primaryImage"
     fresco:viewAspectRatio="0.66667"
+    fresco:pressedStateOverlayImage="@color/blackSemiTransparent"
     tools:context="adapter.PosterAdapter"
     />

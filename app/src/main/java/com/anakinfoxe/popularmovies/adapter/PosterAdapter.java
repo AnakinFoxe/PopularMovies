@@ -26,6 +26,9 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
 
     private List<Movie> mMovies = new ArrayList<>();
 
+    private boolean mTwoPane = false;
+    private boolean mInited = true;
+
     private Activity mActivity;
 
     public PosterAdapter(Activity a) {
@@ -50,11 +53,13 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    public void loadFirstMovie() {
-        if (mMovies != null && mMovies.size() > 0)
-            ((CallBack) mActivity).onItemSelected(mMovies.get(0));
+    public void setmTwoPane(boolean mTwoPane) {
+        this.mTwoPane = mTwoPane;
     }
 
+    public void setmInited(boolean mInited) {
+        this.mInited = mInited;
+    }
 
     public interface CallBack {
         void onItemSelected(Movie movie);
@@ -100,6 +105,12 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.ViewHolder
                     ((CallBack) mActivity).onItemSelected(movie);
             }
         });
+
+        if (mTwoPane && !mInited && position == 0) {
+            ((CallBack) mActivity).onItemSelected(movie);
+
+            mInited = true;
+        }
     }
 
     @Override
