@@ -1,5 +1,7 @@
 #PopularMovies
-This is a project made from scratch for Udacity Android Nanodegree.
+This is a project made from scratch for Udacity Android Nanodegree. The app
+retrieves movie information from the open movie database themoviedb.org based
+on user's preference and display details about the movie to the user. 
 
 ## Features
 
